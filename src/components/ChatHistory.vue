@@ -17,18 +17,24 @@
     </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { API_CONFIG } from '@/store/config';
 import { eventBus } from '@/utils/eventBus';
 import { ElMessage } from 'element-plus';
 import { onMounted, onUnmounted, ref } from 'vue';
 
-const chatHistoryUrl = `${API_CONFIG.rootUrl}/chat/history/snapshots`;
+interface Message {
+    user_name: string;
+    session_id: string;
+    last_msg: string;
+}
 
-const messages = ref([]);
-const activeMessageIndex = ref(null);
+const chatHistoryUrl: string = `${API_CONFIG.rootUrl}/chat/history/snapshots`;
 
-async function fetchChatHistory(isFromOnMounted) {
+const messages = ref<Message[]>([]);
+const activeMessageIndex = ref<number | null>(null);
+
+async function fetchChatHistory(isFromOnMounted: boolean): Promise<void> {
     try {
         console.log('Fetching chat history...');
         const response = await fetch(chatHistoryUrl, {
@@ -44,14 +50,11 @@ async function fetchChatHistory(isFromOnMounted) {
             return;
         }
 
-        const data = await response.json();
+        const data: Message[] = await response.json();
         messages.value = data;
 
-        if (messages.value.length > 0) {
-            if (!isFromOnMounted) {
-                activeMessageIndex.value = 0;
-            }
-
+        if (messages.value.length > 0 && !isFromOnMounted) {
+            activeMessageIndex.value = 0;
         }
 
     } catch (error) {
@@ -59,7 +62,7 @@ async function fetchChatHistory(isFromOnMounted) {
     }
 }
 
-const performSendNewSession = () => {
+const performSendNewSession = (): void => {
     fetchChatHistory(false);
 };
 
@@ -72,8 +75,7 @@ onUnmounted(() => {
     eventBus.$off('performSendNewSession', performSendNewSession);
 });
 
-// 格式化时间戳
-function formatTimestamp(session_id) {
+function formatTimestamp(session_id: string): string {
     const date = new Date(Number(session_id));
     return date.toLocaleString('zh-CN', {
         year: 'numeric',
@@ -85,24 +87,20 @@ function formatTimestamp(session_id) {
     });
 }
 
-// 对话详情
-function handleClick(message, index) {
+function handleClick(message: Message, index: number): void {
     console.log('Clicked message:', message);
-    // 标记当前点击的项为 active
     activeMessageIndex.value = index;
-    // 通过 EventBus 发送选中的聊天数据
     eventBus.$emit('chatSelected', { user_name: message.user_name, session_id: message.session_id });
 }
 
-// 新建对话
-function newChatClick() {
+function newChatClick(): void {
     console.log('newChatClick');
-    // 清除 active 状态
     activeMessageIndex.value = null;
-    eventBus.$emit('newChatClick');
+    eventBus.$emit('newChatClick', undefined);
 }
 
 </script>
+
 
 <style scoped>
 .button-container {

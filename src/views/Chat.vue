@@ -5,7 +5,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import ChatHistory from '../components/ChatHistory.vue';
 import ChatWindow from '../components/ChatWindow.vue';

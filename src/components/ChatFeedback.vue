@@ -9,8 +9,9 @@
     </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script setup lang="ts">
+import { defineEmits, ref } from 'vue';
+
 // 导入 SVG 图标
 import copyNormalIcon from '@/assets/copy-normal-icon.svg';
 import copySelectIcon from '@/assets/copy-select-icon.svg';
@@ -21,12 +22,24 @@ import notLikeSelectIcon from '@/assets/not-like-select-icon.svg';
 import refreshNormalIcon from '@/assets/refresh-normal-icon.svg';
 import refreshSelectIcon from '@/assets/refresh-select-icon.svg';
 
-import { defineEmits } from 'vue';
+// 定义图标类型
+type IconKey = 'like' | 'notLike' | 'copy' | 'refresh';
 
-const emit = defineEmits(['like', 'notLike', 'copy', 'refresh']);
+interface IconType {
+    src: string;
+    activeSrc: string;
+    alt: string;
+}
 
-// 更新后的图标路径，包括正常状态和选中状态的路径
-const icons = {
+// 定义事件类型
+interface EmitEvents {
+    (event: IconKey, payload: { message: string }): void;
+}
+
+const emit = defineEmits<EmitEvents>();
+
+// 图标对象
+const icons: Record<IconKey, IconType> = {
     like: {
         src: likeNormalIcon,
         activeSrc: likeSelectIcon,
@@ -50,17 +63,21 @@ const icons = {
 };
 
 // 状态控制，是否为活跃状态
-const activeIcons = ref({});
+const activeIcons = ref<Record<IconKey, boolean>>({
+    like: false,
+    notLike: false,
+    copy: false,
+    refresh: false
+});
 
 // 根据状态切换图标
-const getIconSrc = (key) => {
+const getIconSrc = (key: IconKey): string => {
     return activeIcons.value[key] ? icons[key].activeSrc : icons[key].src;
 };
 
 // 切换图标状态
-const toggleIcon = (key) => {
+const toggleIcon = (key: IconKey): void => {
     activeIcons.value[key] = !activeIcons.value[key];
-
     emit(key, { message: `feedback from ${key}` });
 };
 </script>

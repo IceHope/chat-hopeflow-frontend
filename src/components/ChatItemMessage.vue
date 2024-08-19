@@ -1,11 +1,11 @@
 <template>
     <div :class="['message', message.type]">
         <div class="message-photo-wrap">
-            <img v-if='message.type === "bot" || message.type === "user"' :src="messagePhoto" class="message-photo" />
+            <img v-if="message.type === 'bot' || message.type === 'user'" :src="messagePhoto" class="message-photo" />
         </div>
         <div class="message-main-content">
-            <div v-if='message.type === "user"'>
-                <span class="message-content message-user-content " v-if="message.text"
+            <div v-if="message.type === 'user'">
+                <span class="message-content message-user-content" v-if="message.text"
                     v-html="parseMarkdown(message.text)"></span>
             </div>
 
@@ -14,109 +14,113 @@
                     @click="enlargeImage(message.imageUrl)" />
             </div>
 
-            <div v-if='message.type === "bot"' class="message-bot-content-wrap">
+            <div v-if="message.type === 'bot'" class="message-bot-content-wrap">
                 <div class="message-bot-model">
                     <span>{{ botModel }}</span>
                 </div>
                 <div class="message-content message-bot-content">
                     <span v-if="message.text" v-html="renderedMarkdown"></span>
-                    <!-- <CodeBlock v-if="message.text" :code="message.text" language="python" /> -->
                 </div>
 
                 <div v-if="showFeedback">
-                    <ChatFeedback @like="handleLike" @notLike="handleNotLike" @copy="handleCopy"
+                    <ChatFeedback @like="handleLike" @not-like="handleNotLike" @copy="handleCopy"
                         @refresh="handleRefresh"></ChatFeedback>
                 </div>
             </div>
-
         </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import "@/style/chat-message.css";
-import hljs from 'highlight.js';
-import 'highlight.js/styles/monokai-sublime.css'; // 引入 monokai 主题样式
-import MarkdownIt from 'markdown-it';
-import { marked } from 'marked';
-import { computed, defineEmits } from 'vue';
-import ChatFeedback from './ChatFeedback.vue';
+import hljs from "highlight.js";
+import "highlight.js/styles/monokai-sublime.css"; // 引入 monokai 主题样式
+import MarkdownIt from "markdown-it";
+import { marked } from "marked";
+import { computed } from "vue";
+import ChatFeedback from "./ChatFeedback.vue";
+
+interface Message {
+    type: "user" | "bot";
+    text?: string;
+    imageUrl?: string;
+    model?: string;
+}
+
+interface Props {
+    message: Message;
+    showFeedback: boolean;
+}
+
+const props = defineProps<Props>();
+const emit = defineEmits(["refresh"]);
 
 // 动态导入图片
-const userPhoto = new URL('@/assets/happy_boy.jpg', import.meta.url).href;
-const botPhoto = new URL('@/assets/girl.jpg', import.meta.url).href;
-const userImgPhoto = new URL('@/assets/photo-blank.png', import.meta.url).href;
+const userPhoto = new URL("@/assets/happy_boy.jpg", import.meta.url).href;
+const botPhoto = new URL("@/assets/girl.jpg", import.meta.url).href;
+const userImgPhoto = new URL("@/assets/photo-blank.png", import.meta.url).href;
 
-const emit = defineEmits(['refresh']);
-
-const props = defineProps({
-    message: Object,
-    showFeedback: Boolean, // 是否显示反馈按钮
-});
-// 处理 "like" 事件
-const handleLike = (data) => {
-    console.log('Like event received with data:', data);
-
+// 处理事件
+const handleLike = (data: any) => {
+    console.log("Like event received with data:", data);
 };
 
-// 处理 "notLike" 事件
-const handleNotLike = (data) => {
-    console.log('Not Like event received with data:', data);
-    // 在这里处理 "notLike" 事件
+const handleNotLike = (data: any) => {
+    console.log("Not Like event received with data:", data);
 };
 
-// 处理 "copy" 事件
 const handleCopy = async () => {
     try {
-        const data = props.message.text
-        // 确保 data.message 存在
+        const data = props.message.text;
         if (data) {
-            // 使用 Clipboard API 将文本复制到剪贴板
             await navigator.clipboard.writeText(data);
-            console.log('Text copied to clipboard:', data);
+            console.log("Text copied to clipboard:", data);
         } else {
-            console.error('No message to copy');
+            console.error("No message to copy");
         }
     } catch (error) {
-        console.error('Failed to copy text to clipboard:', error);
+        console.error("Failed to copy text to clipboard:", error);
     }
 };
-// 处理 "refresh" 事件
-const handleRefresh = (data) => {
-    console.log('Refresh event received with data:', data);
-    console.log('Refresh event received with message:', data['message']);
+
+const handleRefresh = (data: any) => {
+    console.log("Refresh event received with data:", data);
+    console.log("Refresh event received with message:", data["message"]);
     emit("refresh", { message: props.message.text });
 };
-const parseMarkdown = (text) => {
+
+// Markdown 解析
+const parseMarkdown = (text: string) => {
     return marked(text);
 };
+
 // 创建一个 MarkdownIt 实例，并配置代码高亮
 const md = new MarkdownIt({
     html: true,
     linkify: true,
     typographer: true,
-    highlight: (str, lang) => {
+    highlight: (str: string, lang: string) => {
         if (lang && hljs.getLanguage(lang)) {
             try {
-                return `<pre><code class="hljs ${lang}">${hljs.highlight(str, { language: lang, ignoreIllegals: true }).value}</code></pre>`;
+                return `<pre><code class="hljs ${lang}">${hljs.highlight(
+                    str,
+                    { language: lang, ignoreIllegals: true }
+                ).value}</code></pre>`;
             } catch (err) {
                 console.error(err);
             }
         }
-        return `<pre><code class="hljs">${md.utils.escapeHtml(str)}</code></pre>`;
-    }
+        return `<pre><code class="hljs">${md.utils.escapeHtml(
+            str
+        )}</code></pre>`;
+    },
 });
 
-// 计算属性，渲染后的 Markdown 内容
-const renderedMarkdown = computed(() => {
-    return md.render(props.message.text || '');
-});
-
-// Computed properties to dynamically change image source and header flag based on message type
+// 计算属性
 const messagePhoto = computed(() => {
-    if (props.message.type === 'user') {
+    if (props.message.type === "user") {
         return userPhoto;
-    } else if (props.message.type === 'bot') {
+    } else if (props.message.type === "bot") {
         return botPhoto;
     }
     return userImgPhoto;
@@ -126,8 +130,12 @@ const botModel = computed(() => {
     return props.message.model;
 });
 
+const renderedMarkdown = computed(() => {
+    return md.render(props.message.text || "");
+});
 
-const enlargeImage = (imageUrl) => {
+
+const enlargeImage = (imageUrl: string) => {
     const modal = document.createElement('div');
     modal.style.position = 'fixed';
     modal.style.top = '0';

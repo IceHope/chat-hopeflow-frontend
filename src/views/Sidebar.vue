@@ -1,20 +1,11 @@
 <template>
     <div class="sidebar">
         <div class="menu-item-containr">
-            <div class="menu-item" :class="{ active: selectedItem === 'chat', hovered: hoverItem === 'chat' }"
-                @click="navigate('chat')" @mouseover="hoverItem = 'chat'" @mouseleave="hoverItem = ''">
-                <div class="icon">💬</div>
-                <span class="text">对话</span>
-            </div>
-            <div class="menu-item" :class="{ active: selectedItem === 'rag', hovered: hoverItem === 'rag' }"
-                @click="navigate('rag')" @mouseover="hoverItem = 'rag'" @mouseleave="hoverItem = ''">
-                <div class="icon">📚</div>
-                <span class="text">RAG</span>
-            </div>
-            <div class="menu-item" :class="{ active: selectedItem === 'agent', hovered: hoverItem === 'agent' }"
-                @click="navigate('agent')" @mouseover="hoverItem = 'agent'" @mouseleave="hoverItem = ''">
-                <div class="icon">🤖</div>
-                <span class="text">智能体</span>
+            <div v-for="item in menuItems" :key="item.routeName" class="menu-item"
+                :class="{ active: selectedItem === item.routeName, hovered: hoverItem === item.routeName }"
+                @click="navigate(item.routeName)" @mouseover="hoverItem = item.routeName" @mouseleave="hoverItem = ''">
+                <div class="icon">{{ item.icon }}</div>
+                <span class="text">{{ item.text }}</span>
             </div>
         </div>
         <div class="menu-user-container" @click="togglePopup" @mouseover="hover = true" @mouseleave="hover = false">
@@ -33,37 +24,48 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ElMessage } from 'element-plus';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const username = ref(localStorage.getItem('username') || ''); // 直接从 localStorage 获取 username
+interface MenuItem {
+    routeName: string;
+    icon: string;
+    text: string;
+}
 
+const username = ref(localStorage.getItem('username') || '');
 const router = useRouter();
 const hoverItem = ref('');
 const selectedItem = ref('');
 const showPopup = ref(false);
 const popupPosition = ref({ top: 0, left: 0 });
 const hover = ref(false);
-const loginFlag = ref('')
-let menuUserContainer = null;
+const loginFlag = ref('');
+let menuUserContainer: HTMLElement | null = null;
 
-const navigate = (routeName) => {
+const menuItems: MenuItem[] = [
+    { routeName: 'chat', icon: '💬', text: '对话' },
+    { routeName: 'rag', icon: '📚', text: 'RAG' },
+    { routeName: 'agent', icon: '🤖', text: '智能体' },
+];
+
+const navigate = (routeName: string) => {
     if (!localStorage.getItem('authToken')) {
         ElMessage.error('请先登录');
         router.push({ name: 'login' });
-        return
+        return;
     }
     selectedItem.value = routeName;
     router.push({ name: routeName });
 };
 
-const togglePopup = (event) => {
+const togglePopup = (event: MouseEvent) => {
     if (localStorage.getItem('authToken')) {
-        loginFlag.value = "退出登录"
+        loginFlag.value = '退出登录';
     } else {
-        loginFlag.value = "登录"
+        loginFlag.value = '登录';
     }
     showPopup.value = !showPopup.value;
     if (menuUserContainer) {
@@ -86,10 +88,8 @@ const logout = () => {
     if (localStorage.getItem('authToken')) {
         console.log('Logging out...');
         ElMessage.info('用户已退出');
-        // localStorage.removeItem('authToken');
         localStorage.clear();
     } else {
-        // router.push({ name: 'login' });
         console.log('to login');
         router.push({ name: 'login' });
     }
@@ -104,6 +104,10 @@ const popupStyles = computed(() => ({
     left: `${popupPosition.value.left}px`,
 }));
 </script>
+
+<style scoped>
+/* ... (styles remain the same) ... */
+</style>
 
 <style scoped>
 .sidebar {

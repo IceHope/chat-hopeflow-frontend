@@ -4,9 +4,12 @@
             <div v-if="selectedModel" class="price-info">
                 <el-descriptions direction="vertical" :column="3" border>
                     <el-descriptions-item label="价格 ¥" label-class-name="my-label">1M tokens</el-descriptions-item>
-                    <el-descriptions-item label="输入" label-class-name="my-label">{{ inputPrice }}</el-descriptions-item>
-                    <el-descriptions-item label="输出" label-class-name="my-label">{{ outputPrice
-                        }}</el-descriptions-item>
+                    <el-descriptions-item label="输入" label-class-name="my-label">{{
+                        inputPrice
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="输出" label-class-name="my-label">{{
+                        outputPrice
+                    }}</el-descriptions-item>
                 </el-descriptions>
             </div>
             <span class="mode-setting-header-model">大语言模型</span>
@@ -27,30 +30,42 @@
     </div>
 </template>
 
-<script setup>
-import { API_CONFIG } from '@/store/config';
-import { ElMessage, ElOption, ElSelect } from 'element-plus';
-import 'element-plus/dist/index.css'; // 导入 Element Plus 样式
-import { onMounted, ref, watch } from 'vue';
-import { useStore } from 'vuex';
+<script lang="ts" setup>
+import { API_CONFIG } from "@/store/config";
+import { ElMessage } from "element-plus";
+import "element-plus/dist/index.css"; // 导入 Element Plus 样式
+import { onMounted, ref, watch } from "vue";
+import { useStore } from "vuex";
+
 const store = useStore();
 
 const chatModelUrl = `${API_CONFIG.rootUrl}/chat/modes`;
 
+interface ChatType {
+    type: string;
+    desc: string;
+    names: Model[];
+}
 
-const selectedType = ref("");
-const selectedModel = ref("");
-const chatTypes = ref([]);
-const filteredModels = ref([]);
-const inputPrice = ref(0);
-const outputPrice = ref(0);
+interface Model {
+    name: string;
+    input_price: number;
+    output_price: number;
+}
+
+const selectedType = ref<string>("");
+const selectedModel = ref<string>("");
+const chatTypes = ref<ChatType[]>([]);
+const filteredModels = ref<Model[]>([]);
+const inputPrice = ref<number>(0);
+const outputPrice = ref<number>(0);
 
 const fetchChatTypes = async () => {
     try {
         const response = await fetch(chatModelUrl);
         if (!response.ok) {
-            ElMessage('Failed to fetch chat types');
-            throw new Error('Failed to fetch chat types');
+            ElMessage("Failed to fetch chat types");
+            throw new Error("Failed to fetch chat types");
         }
         const data = await response.json();
         chatTypes.value = data.models;
@@ -63,17 +78,19 @@ const fetchChatTypes = async () => {
                 outputPrice.value = filteredModels.value[0].output_price;
             }
         } else {
-            ElMessage('No chat types found');
+            ElMessage("No chat types found");
         }
     } catch (error) {
-        console.error('Error fetching chat types:', error);
-        ElMessage('Error fetching chat types:', error)
+        console.error("Error fetching chat types:", error);
+        ElMessage("Error fetching chat types:", error);
     }
 };
 
 const handleTypeChange = () => {
-    console.log('selectedType changed click:', selectedType.value);
-    const selectedTypeItem = chatTypes.value.find(item => item.type === selectedType.value);
+    console.log("selectedType changed click:", selectedType.value);
+    const selectedTypeItem = chatTypes.value.find(
+        (item) => item.type === selectedType.value
+    );
     if (selectedTypeItem) {
         filteredModels.value = selectedTypeItem.names;
         if (filteredModels.value.length > 0) {
@@ -81,7 +98,7 @@ const handleTypeChange = () => {
             inputPrice.value = filteredModels.value[0].input_price;
             outputPrice.value = filteredModels.value[0].output_price;
         } else {
-            selectedModel.value = '';
+            selectedModel.value = "";
             inputPrice.value = 0;
             outputPrice.value = 0;
         }
@@ -89,8 +106,10 @@ const handleTypeChange = () => {
 };
 
 const handleModelChange = () => {
-    console.log('selectedModel changed click:', selectedModel.value);
-    const selectedModelItem = filteredModels.value.find(model => model.name === selectedModel.value);
+    console.log("selectedModel changed click:", selectedModel.value);
+    const selectedModelItem = filteredModels.value.find(
+        (model) => model.name === selectedModel.value
+    );
     if (selectedModelItem) {
         inputPrice.value = selectedModelItem.input_price;
         outputPrice.value = selectedModelItem.output_price;
@@ -102,15 +121,14 @@ onMounted(() => {
 });
 
 watch(selectedType, (newType) => {
-    store.commit('setSelectedType', newType);
-    console.log('selectedType changed:', newType);
+    store.commit("setSelectedType", newType);
+    console.log("selectedType changed:", newType);
 });
 
 watch(selectedModel, (newModel) => {
-    store.commit('setSelectedModel', newModel);
-    console.log('selectedModel changed:', newModel);
+    store.commit("setSelectedModel", newModel);
+    console.log("selectedModel changed:", newModel);
 });
-
 </script>
 
 <style scoped>

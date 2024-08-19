@@ -6,25 +6,27 @@
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            cards: [
-                { id: 1, title: 'agent_translate' },
-                { id: 2, title: 'agent_storyline' },
-                { id: 3, title: 'agent_translate' },
-                { id: 4, title: 'agent_translate' },
-                { id: 5, title: 'agent_translate' },
-                { id: 6, title: 'agent_translate' }
-            ]
-        };
-    },
-    methods: {
-        navigateToCardDetail(cardTitle) {
-            this.$router.push({ name: cardTitle })
-        }
-    }
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+
+interface Card {
+    id: number;
+    title: string;
+}
+
+const router = useRouter();
+
+const cards: Card[] = [
+    { id: 1, title: 'agent_translate' },
+    { id: 2, title: 'agent_storyline' },
+    { id: 3, title: 'agent_translate' },
+    { id: 4, title: 'agent_translate' },
+    { id: 5, title: 'agent_translate' },
+    { id: 6, title: 'agent_translate' },
+];
+
+const navigateToCardDetail = (cardTitle: string) => {
+    router.push({ name: cardTitle });
 };
 </script>
 

@@ -11,6 +11,8 @@
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "es2020", // or 'esnext' or 'es2022' or 'node16' or 'nodenext'
+    "module": "esnext", // or 'es2020' or 'es2022' or 'node16' or 'nodenext' or 'system'
     "baseUrl": ".",
     "paths": {
       "@/*": [

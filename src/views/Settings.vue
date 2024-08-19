@@ -9,7 +9,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ModeSetting from '@/components/ModeSetting.vue';
 
 const props = defineProps({

@@ -7,17 +7,9 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Sidebar from '@/views/Sidebar.vue';
-
-export default {
-  name: 'App',
-  components: {
-    Sidebar
-  }
-}
 </script>
-
 
 <style scoped>
 #app {
@@ -29,7 +21,6 @@ export default {
 .sidebar {
   width: 10%;
   height: 100vh;
-
 }
 
 .main-content {
