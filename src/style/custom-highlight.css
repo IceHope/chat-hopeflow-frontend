@@ -1,0 +1,33 @@
+/* 自定义高亮样式 */
+.hljs {
+    background: #1e1e1e;
+    /* 黑色背景 */
+    color: #dcdcdc;
+    /* 文字颜色 */
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    position: relative;
+    /* 使复制按钮能够定位 */
+    margin-top: 20px;
+    /* 在代码块上方增加空间 */
+}
+
+/* 复制按钮样式 */
+.copy-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* 复制按钮 hover 样式 */
+.copy-button:hover {
+    background-color: #555;
+}

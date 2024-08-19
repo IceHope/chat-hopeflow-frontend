@@ -1,0 +1,41 @@
+<template>
+  <div id="app">
+    <Sidebar class="sidebar" />
+    <div class="main-content">
+      <router-view />
+    </div>
+  </div>
+</template>
+
+<script>
+import Sidebar from '@/views/Sidebar.vue';
+
+export default {
+  name: 'App',
+  components: {
+    Sidebar
+  }
+}
+</script>
+
+
+<style scoped>
+#app {
+  display: flex;
+  height: 100vh;
+  background-color: white;
+}
+
+.sidebar {
+  width: 10%;
+  height: 100vh;
+
+}
+
+.main-content {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--chat-background-color);
+}
+</style>

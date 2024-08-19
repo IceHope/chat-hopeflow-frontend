@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* 按钮样式 */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+    background-color: #004494;
+    transform: scale(0.98);
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}

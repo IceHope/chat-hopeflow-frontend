@@ -1,0 +1,101 @@
+.message {
+    box-sizing: border-box;
+    /* 确保 padding 包含在宽度内 */
+    width: 100%;
+    /* padding: 0px 15px; */
+    border-radius: 8px;
+    display: flex;
+    padding-right: 30px;
+    margin-top: 30px;
+    align-items: flex-start;
+}
+
+.message-photo-wrap {
+    width: 50px;
+    display: flex;
+    align-items: center;
+    /* 垂直居中头像 */
+    position: sticky;
+    /* 使头像固定 */
+    top: 0;
+    /* 固定在顶部 */
+    background-color: var(--chat-background-color);
+    /* 设置背景色以适应内容 */
+}
+
+.message-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    /* 确保头像不会变形 */
+}
+
+.message-main-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 15px;
+}
+
+.message-content {
+    border-radius: 15px;
+    word-wrap: break-word;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    padding: 0px 15px;
+}
+
+.message-user-content {
+    display: inline-block;
+    background-color: var(--chat-user-backgroud-color);
+}
+
+.message-bot-content-wrap {
+    width: 100%;
+    background-color: var(--chat-background-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.message-bot-model {
+    margin-left: 5px;
+    margin-bottom: 5px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.message-bot-content {
+    width: 100%;
+    background-color: white;
+}
+
+.message.user-img {
+    background-color: #F5F5F5;
+    text-align: left;
+}
+
+.message-user-uploaded-image-wrapper {
+    background-color: var(--chat-background-color);
+    width: 100%;
+    border-radius: 12px;
+    display: flex;
+    overflow: hidden;
+}
+
+.message-user-uploaded-image {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    /* 保持图片比例填充容器 */
+    cursor: pointer;
+    /* 鼠标悬停时显示手型图标，表示可以点击 */
+    border-radius: 8px;
+}
+
+.message-bot-feedback {}
+
+.feedback-icon {
+    width: 30px;
+    height: 30px;
+}

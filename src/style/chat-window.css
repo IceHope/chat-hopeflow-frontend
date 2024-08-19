@@ -1,0 +1,307 @@
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    /* 调整 margin 以确保居中 */
+    padding-top: 10px;
+    padding-bottom: 20px;
+    padding-left: 30px;
+    padding-right: 50px;
+    height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    /* 确保最大宽度为100% */
+    border: 1px solid #ddd;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    /* 确保 padding 和 border 包含在内 */
+}
+
+.chat-header {
+    padding-top: 10px;
+    padding-bottom: 5px;
+    display: flex;
+    justify-content: left;
+    align-items: left;
+}
+
+.toggle-container {
+    padding-left: 10px;
+    display: flex;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-toggle {
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    margin-top: 5px;
+    padding: 12px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-toggle:hover {
+    background: linear-gradient(135deg, #5a77d7, #8d5bc4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-toggle:active {
+    background: linear-gradient(135deg, #4a63b1, #744ea0);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(0.98);
+}
+
+.btn-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.4);
+}
+
+.multi-turn-toggle {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.multi-turn-toggle label {
+    font-size: 16px;
+    /* 可选：调整字体大小 */
+    cursor: pointer;
+}
+
+.multi-turn-toggle input[type="checkbox"] {
+    margin-right: 5px;
+    /* 可选：调整复选框与文本之间的间距 */
+}
+
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    /* 适用于 Firefox */
+    scrollbar-color: #bbb #f9f9f9;
+    /* 滚动条和轨道颜色，适用于 Firefox */
+}
+
+.chat-area::-webkit-scrollbar {
+    width: 8px;
+    /* 滚动条宽度 */
+}
+
+.chat-area::-webkit-scrollbar-track {
+    background: #f9f9f9;
+    /* 轨道背景颜色 */
+}
+
+.chat-area::-webkit-scrollbar-thumb {
+    background-color: #bbb;
+    /* 滚动条颜色 */
+    border-radius: 10px;
+    /* 滚动条圆角 */
+    border: 2px solid #f9f9f9;
+    /* 滚动条边框，显示轨道背景色 */
+}
+
+.chat-area::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+    /* 滚动条悬停颜色 */
+}
+
+.chat-follow-questions-loadding {
+    margin-left: 70px;
+    margin-top: 10px;
+}
+
+.chat-follow-questions-warp {
+    margin-top: 10px;
+    margin-left: 70px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.chat-follow-question {
+    font-size: 14px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin: 5px 0;
+    cursor: pointer;
+    display: inline-block;
+    /* Make the container only as wide as the content */
+    box-sizing: border-box;
+    /* Ensure padding is included within the width */
+    white-space: nowrap;
+    /* Prevent text from wrapping to multiple lines */
+}
+
+.chat-follow-question:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.input-area {
+    margin-bottom: 10px;
+    margin-right: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    padding: 20px 10px;
+    background-color: #FFF;
+    border-top: 1px solid #DDD;
+    border-radius: 20px;
+    /* Added border-radius to match textarea */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Optional: Add shadow for depth */
+}
+
+.input-controls {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    /* 垂直居中对齐所有元素 */
+    gap: 10px;
+    /* 左右元素之间的间距 */
+}
+
+.uploaded-images-container {
+    padding-left: 30px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    /* 允许多行显示 */
+    margin-bottom: 10px;
+    /* 与文本输入框的间距 */
+    gap: 10px;
+    /* 图片之间的间距 */
+}
+
+.uploaded-image-wrapper {
+    position: relative;
+    /* 允许定位删除图标 */
+    width: 100px;
+    /* 设置图片的宽度 */
+    height: 100px;
+    /* 设置图片的高度 */
+    border: 1px solid #ddd;
+    /* 添加边框 */
+    border-radius: 8px;
+    /* 添加圆角 */
+    overflow: hidden;
+    /* 隐藏溢出的部分 */
+}
+
+.uploaded-image {
+    width: 100%;
+    /* 图片占满容器 */
+    height: 100%;
+    /* 图片占满容器 */
+    object-fit: cover;
+    /* 保持图片比例，填充容器 */
+}
+
+.delete-icon {
+    position: absolute;
+    /* 绝对定位在图片容器内 */
+    top: 5px;
+    /* 距离顶部 */
+    right: 5px;
+    /* 距离右侧 */
+    width: 20px;
+    /* 删除图标的宽度 */
+    height: 20px;
+    /* 删除图标的高度 */
+    cursor: pointer;
+    /* 鼠标悬停时显示为指针 */
+    background-color: rgba(255, 255, 255, 0.7);
+    /* 半透明的背景 */
+    border-radius: 50%;
+    /* 圆形背景 */
+    padding: 2px;
+    /* 内间距 */
+    display: none;
+    /* 默认隐藏 */
+}
+
+.uploaded-image-wrapper:hover .delete-icon {
+    display: block;
+    /* 仅在鼠标悬停时显示删除图标 */
+}
+
+.delete-icon:hover {
+    background-color: rgba(255, 0, 0, 0.7);
+    /* 鼠标悬停时，背景变为红色 */
+}
+
+.input-area textarea {
+    flex-grow: 1;
+    resize: none;
+    height: 40px;
+    /* 高度设置为一行的高度 */
+    border: none;
+    /* 去除边框 */
+    border-radius: 20px;
+    /* 圆角边框 */
+    font-size: 22px;
+    /* 字体大小 */
+    line-height: 40px;
+    /* 行高与textarea高度一致，使文本垂直居中 */
+    padding: 0 12px;
+    /* 内边距 */
+    outline: none;
+    /* 去除轮廓 */
+    background-color: #FFF;
+    /* 背景色 */
+    transition: all 0.2s ease;
+    /* 过渡效果 */
+    box-shadow: none;
+    /* 去除阴影 */
+    overflow: hidden;
+    /* 隐藏溢出内容 */
+}
+
+
+.input-area textarea:focus {
+    box-shadow: none;
+    /* No shadow on focus */
+}
+
+.upload-icon {
+    margin-right: auto;
+    /* 将上传图标推到最左边 */
+}
+
+.send-icon {
+    margin-left: auto;
+    /* 将发送图标推到最右边 */
+}
+
+.icon {
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 8px;
+    align-self: flex-end;
+    /* 保持图标在顶部 */
+}
+
+.icon:hover {
+    transform: scale(1.1);
+}
+
+.send-icon.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
