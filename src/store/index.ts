@@ -1,6 +1,11 @@
 import { createStore } from 'vuex';
 
-const store = createStore({
+interface State {
+    selectedType: string;
+    selectedModel: string;
+}
+
+const store = createStore<State>({
     state() {
         return {
             selectedType: 'zhipu',
@@ -8,18 +13,17 @@ const store = createStore({
         };
     },
     mutations: {
-        setSelectedType(state, type) {
+        setSelectedType(state, type: string) {
             state.selectedType = type;
         },
-        setSelectedModel(state, model) {
+        setSelectedModel(state, model: string) {
             state.selectedModel = model;
         },
     },
     getters: {
-        // 添加getters来访问状态
-        getSelectedType: state => state.selectedType,
-        getSelectedModel: state => state.selectedModel,
-    }
+        getSelectedType: (state) => state.selectedType,
+        getSelectedModel: (state) => state.selectedModel,
+    },
 });
 
 export default store;

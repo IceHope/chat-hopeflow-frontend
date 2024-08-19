@@ -1,7 +1,7 @@
 <template>
     <div class="translate-agent">
         <div class="translate-header-setting">
-            <div class="translate-header-desc" v-html="AgentDesc"></div>
+            <div class="translate-header-desc" v-html="AgentDesc" />
             <div class="review-input">
                 <label for="review-flag">是否增加人工审查意见</label>
                 <input id="review-flag" type="checkbox" v-model="additionalParams.human_flag" />
@@ -23,23 +23,32 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { API_CONFIG } from '@/store/config';
 import { ref } from 'vue';
 import ChatWindow from '../ChatWindow.vue';
 
-import { API_CONFIG } from '@/store/config';
+interface AdditionalParams {
+    source_lang: string;
+    target_lang: string;
+    human_flag: boolean;
+}
 
-const WebUrl = ref(`${API_CONFIG.wsUrl}/agent/translate_human`);
-
-const additionalParams = ref({
+const WebUrl = ref<string>(`${API_CONFIG.wsUrl}/agent/translate_human`);
+const additionalParams = ref<AdditionalParams>({
     source_lang: '英文',
     target_lang: '中文',
-    human_flag: true // 默认是true
+    human_flag: true,
 });
-const InputPlaceholder = ref('请输入要翻译的文本,shift+回车换行,回车发送');
-const AgentDesc = ref(
-    '1.&nbsp大模型直接翻译<br/>2.&nbsp大模型审查翻译结果,给出修改意见, 可以人工给出参考意见<br/>3.&nbsp大模型根据修改意见,最后翻译结果');
+const InputPlaceholder = ref<string>('请输入要翻译的文本,shift+回车换行,回车发送');
+const AgentDesc = ref<string>(
+    '1. 大模型直接翻译<br/>2. 大模型审查翻译结果,给出修改意见, 可以人工给出参考意见<br/>3. 大模型根据修改意见,最后翻译结果'
+);
 </script>
+
+<style scoped>
+/* ... (styles remain the same) ... */
+</style>
 
 <style scoped>
 .translate-agent {

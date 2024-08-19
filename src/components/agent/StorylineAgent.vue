@@ -1,7 +1,7 @@
 <template>
     <div class="translate-agent">
         <div class="translate-header-setting">
-            <div class="translate-header-desc" v-html="AgentDesc"></div>
+            <div class="translate-header-desc" v-html="AgentDesc" />
             <div class="review-input">
                 <label for="review-flag">是否增加人工审查意见</label>
                 <input id="review-flag" type="checkbox" v-model="additionalParams.human_flag" />
@@ -11,20 +11,28 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { API_CONFIG } from '@/store/config';
 import { ref } from 'vue';
 import ChatWindow from '../ChatWindow.vue';
 
-import { API_CONFIG } from '@/store/config';
+interface AdditionalParams {
+    human_flag: boolean;
+}
 
-const WebUrl = ref(`${API_CONFIG.wsUrl}/agent/storyline`);
-const additionalParams = ref({
-    human_flag: true // 默认是true
+const WebUrl = ref<string>(`${API_CONFIG.wsUrl}/agent/storyline`);
+const additionalParams = ref<AdditionalParams>({
+    human_flag: true,
 });
-const InputPlaceholder = ref('请输入故事灵感,shift+回车换行,回车发送');
-const AgentDesc = ref(
-    '1.&nbsp世界观和背景故事<br/>2.&nbsp故事情节线大纲<br/>3.&nbsp一步一步生成具体情节');
+const InputPlaceholder = ref<string>('请输入故事灵感,shift+回车换行,回车发送');
+const AgentDesc = ref<string>(
+    '1. 世界观和背景故事<br/>2. 故事情节线大纲<br/>3. 一步一步生成具体情节'
+);
 </script>
+
+<style scoped>
+/* ... (styles remain the same) ... */
+</style>
 
 <style scoped>
 .translate-agent {
