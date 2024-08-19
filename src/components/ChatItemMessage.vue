@@ -95,11 +95,11 @@ const parseMarkdown = (text: string) => {
 };
 
 // 创建一个 MarkdownIt 实例，并配置代码高亮
-const md = new MarkdownIt({
+const md: MarkdownIt = new MarkdownIt({
     html: true,
     linkify: true,
     typographer: true,
-    highlight: (str: string, lang: string) => {
+    highlight: (str: string, lang: string): string => {
         if (lang && hljs.getLanguage(lang)) {
             try {
                 return `<pre><code class="hljs ${lang}">${hljs.highlight(
@@ -108,11 +108,11 @@ const md = new MarkdownIt({
                 ).value}</code></pre>`;
             } catch (err) {
                 console.error(err);
+                // 在错误情况下返回未高亮的代码
+                return `<pre><code class="hljs">${md.utils.escapeHtml(str)}</code></pre>`;
             }
         }
-        return `<pre><code class="hljs">${md.utils.escapeHtml(
-            str
-        )}</code></pre>`;
+        return `<pre><code class="hljs">${md.utils.escapeHtml(str)}</code></pre>`;
     },
 });
 
