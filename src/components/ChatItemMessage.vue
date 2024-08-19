@@ -41,7 +41,7 @@ import { computed } from "vue";
 import ChatFeedback from "./ChatFeedback.vue";
 
 interface Message {
-    type: "user" | "bot";
+    type: "user" | "bot" | "user-img";
     text?: string;
     imageUrl?: string;
     model?: string;

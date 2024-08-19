@@ -167,7 +167,7 @@ const initWebSocket = () => {
             isFollowQuestionVisible.value = true;
             isFollowQuestionLoading.value = false;
             const reply_questions = data.match(/\[Q\](.*?)\s*(?=\[Q\]|\s*$)/g)
-                ?.map(q => q.replace(/\[Q\]/, '').trim()) || [];
+                ?.map((q: string) => q.replace(/\[Q\]/, '').trim()) || [];
             questions.value = reply_questions;
             return;
         }
@@ -238,7 +238,7 @@ const handleChatSelected = async (chatDetails: ChatDetails) => {
                         } else if (contentItem.type === 'image_url') {
                             messages.value.push({
                                 type: 'user-img',
-                                imageUrl: contentItem.image_url.url,
+                                imageUrl: contentItem.image_url?.url ?? '', // Provide a default value (e.g., an empty string)
                             });
                         }
                     });

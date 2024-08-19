@@ -6,10 +6,10 @@
                     <el-descriptions-item label="价格 ¥" label-class-name="my-label">1M tokens</el-descriptions-item>
                     <el-descriptions-item label="输入" label-class-name="my-label">{{
                         inputPrice
-                        }}</el-descriptions-item>
+                    }}</el-descriptions-item>
                     <el-descriptions-item label="输出" label-class-name="my-label">{{
                         outputPrice
-                        }}</el-descriptions-item>
+                    }}</el-descriptions-item>
                 </el-descriptions>
             </div>
             <span class="mode-setting-header-model">大语言模型</span>
@@ -82,7 +82,7 @@ const fetchChatTypes = async () => {
         }
     } catch (error) {
         console.error("Error fetching chat types:", error);
-        ElMessage("Error fetching chat types:", error);
+        ElMessage("Error fetching chat types:");
     }
 };
 
