@@ -1,7 +1,7 @@
 // config.ts
 export const API_CONFIG: API_CONFIG = {
     wsUrl: 'ws://localhost:8001/ws',
-    rootUrl: 'http://localhost:8001'
+    rootUrl: 'http://localhost:8585'
 };
 
 export const LOCAL_STORE_ITEM: LOCAL_STORE_ITEM = {
