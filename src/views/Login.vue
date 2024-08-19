@@ -28,7 +28,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { API_CONFIG, LOCAL_STORE_ITEM } from '@/store/config';
 import { ElMessage } from 'element-plus';
 import { onMounted, ref } from 'vue';
