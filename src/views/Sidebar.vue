@@ -46,10 +46,10 @@ const loginFlag = ref('');
 let menuUserContainer: HTMLElement | null = null;
 
 const menuItems: MenuItem[] = [
-    { routeName: 'chat', icon: '💬', text: '对话' },
-    { routeName: 'rag', icon: '📚', text: 'RAG' },
+    { routeName: 'chat', icon: '💬', text: '聊天' },
     { routeName: 'agent', icon: '🤖', text: '智能体' },
     { routeName: 'knowledge', icon: '📚', text: '知识库' },
+    { routeName: 'rag', icon: '📚', text: '知识问答' },
 ];
 
 const navigate = (routeName: string) => {

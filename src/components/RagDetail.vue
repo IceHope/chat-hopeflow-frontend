@@ -21,17 +21,32 @@
                     <span v-if="props.ragEvent.retrieve_time" class="retrieve-time">{{ props.ragEvent.retrieve_time
                         }}</span>
                 </div>
-                <div v-if="props.ragEvent.image_qa" class="text-item">
+
+                <div v-if="props.ragEvent.rerank_desc" class="text-item">
+                    <el-icon v-if="!props.ragEvent.rerank_time">
+                        <Loading />
+                    </el-icon>
+                    <el-icon v-else>
+                        <SuccessFilled />
+                    </el-icon>
+                    <span class="rerank-desc">{{ props.ragEvent.rerank_desc }}</span>
+                    <span v-if="props.ragEvent.rerank_time" class="rerank-time">{{ props.ragEvent.rerank_time
+                        }}</span>
+                </div>
+
+
+                <div v-if="props.ragEvent.image_qa_desc" class="text-item">
                     <el-icon v-if="!props.ragEvent.image_qa_time">
                         <Loading />
                     </el-icon>
                     <el-icon v-else>
                         <SuccessFilled />
                     </el-icon>
-                    <span class="image-qa">{{ props.ragEvent.image_qa }}</span>
+                    <span class="image-qa">{{ props.ragEvent.image_qa_desc }}</span>
                     <span v-if="props.ragEvent.image_qa_time" class="image-qa-time">{{ props.ragEvent.image_qa_time
                         }}</span>
                 </div>
+
                 <div v-if="props.ragEvent.generate_response_desc" class="text-item">
                     <el-icon v-if="!props.ragEvent.generate_response_time">
                         <Loading />
@@ -69,13 +84,18 @@ import { ArrowDown, ArrowUp, Loading, SuccessFilled } from '@element-plus/icons-
 import { defineProps, ref } from 'vue';
 import RagNodeDialog from "./RagNodeDialog.vue";
 
+import { useStore } from "vuex";
+
+const store = useStore();
+
 interface Props {
     ragChunkNodes: RagChunkNode[];
     ragEvent: RagEvent | null;
 }
 
 const props = defineProps<Props>();
-const isTextSectionVisible = ref(false);
+const isTextSectionVisible = ref(store.state.rag.isExpandDetailProcess);
+
 const isHovered = ref(false);
 const dialogVisible = ref(false);
 const selectedItem = ref<RagChunkNode>({

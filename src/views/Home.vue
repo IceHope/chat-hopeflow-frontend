@@ -5,14 +5,14 @@
             <LoadingDots />
         </div>
         <div>
-            <RagDetail></RagDetail>
+            <RagConfig></RagConfig>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import LoadingDots from '@/components/LoadingDots.vue';
-import RagDetail from '@/components/RagDetail.vue';
+import RagConfig from '@/components/RagConfig.vue';
 import { computed } from "vue";
 import { useStore } from 'vuex';
 
@@ -23,10 +23,9 @@ const username = computed(() => store.getters.getUsername);
 <style scoped>
 .home {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    padding-left: 200px;
     /* 水平居中 */
-    align-items: center;
-    /* 垂直居中 */
     width: 100vw;
     /* 确保容器宽度占满视口 */
     height: 100vh;

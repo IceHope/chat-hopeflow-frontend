@@ -121,12 +121,12 @@ onMounted(() => {
 });
 
 watch(selectedType, (newType) => {
-    store.commit("setSelectedType", newType);
+    store.dispatch('llmChat/updateType', newType);
     console.log("selectedType changed:", newType);
 });
 
 watch(selectedModel, (newModel) => {
-    store.commit("setSelectedModel", newModel);
+    store.dispatch("llmChat/updateModel", newModel);
     console.log("selectedModel changed:", newModel);
 });
 </script>

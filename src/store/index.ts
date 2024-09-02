@@ -1,29 +1,20 @@
 import { createStore } from 'vuex';
+import { LlmChatModule, type LlmChatState } from './modules/llm';
+import { RagModule, type RagState } from './modules/rag';
+import { UserModule, type UserState } from './modules/user';
 
-interface State {
-    selectedType: string;
-    selectedModel: string;
+export interface RootState {
+    user: UserState;
+    llmChat: LlmChatState;
+    rag: RagState,
 }
 
-const store = createStore<State>({
-    state() {
-        return {
-            selectedType: 'zhipu',
-            selectedModel: 'GLM-4-Flash',
-        };
-    },
-    mutations: {
-        setSelectedType(state, type: string) {
-            state.selectedType = type;
-        },
-        setSelectedModel(state, model: string) {
-            state.selectedModel = model;
-        },
-    },
-    getters: {
-        getSelectedType: (state) => state.selectedType,
-        getSelectedModel: (state) => state.selectedModel,
+export default createStore<RootState>({
+    modules: {
+        user: UserModule,
+        llmChat: LlmChatModule,
+        rag: RagModule,
     },
 });
 
-export default store;
+

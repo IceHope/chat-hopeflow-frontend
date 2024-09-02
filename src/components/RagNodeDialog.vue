@@ -12,7 +12,7 @@
                         <span class="info-value">{{ dialogNode.file_type }}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label score"><strong>相似分:</strong></span>
+                        <span class="info-label score"><strong>score:</strong></span>
                         <span class="info-value score">{{ parseFloat(dialogNode.score).toFixed(2) }}</span>
                     </div>
                     <div class="info-item">

@@ -126,15 +126,21 @@ const isBotResponding = ref(false); // 控制输入框和按钮的禁用状态
 const isButtonDisabled = ref(true); // 按钮禁用状态
 const uploadedImages = ref<string[]>([]); // 存储多个上传的图片Base64数据
 
-const selectedType = ref(store.state.selectedType);
-const selectedModel = ref(store.state.selectedModel);
+const selectedType = ref(store.state.llmChat.selectedType);
+const selectedModel = ref(store.state.llmChat.selectedModel);
 const mode_name = ref(`${selectedType.value}: ${selectedModel.value}`);
 const isFirstResponse = ref(true);
 const isChatContentStreaming = ref(false)
 const multiTurnChatEnabled = ref(true);
+const chatStreamStartTime = ref<number>(0)
 
 const sourceTypeValue = ref(props.sourceType); // 解析并保存sourceType属性
 console.log("sourceTypeValue =", sourceTypeValue.value)
+
+const ragMultiTurnChatEnabled = computed(() => store.state.rag.multiTurnChatEnabled);
+const ragRerankCount = computed(() => store.state.rag.rerankCount);
+const ragRetriveCount = computed(() => store.state.rag.retriveCount);
+const ragFusionCount = computed(() => store.state.rag.fusionCount);
 
 
 watch([newMessage, isBotResponding], ([newValue, botResponding]) => {
@@ -163,13 +169,14 @@ function handleQuestionClick(question: string) {
 }
 const performRag = (data: string, lastIndex: number) => {
     if (messages.value[lastIndex]?.type !== 'bot') {
+        console.log("data =", data, Date.now())
         let ragEventChatItem = {
-            retrieve_start_time: Date.now(),
-            last_event_time: Date.now(),
-            current_event_desc: '正在检索知识库 ...',
-            retrieve_desc: '正在检索知识库 ...',
+            current_event_desc: '正在检索文本...',
+            retrieve_desc: '正在检索文本...',
             retrieve_time: '',
-            image_qa: '',
+            rerank_desc: '',
+            rerank_time: "",
+            image_qa_desc: '',
             image_qa_time: '',
             generate_response_desc: '',
             generate_response_time: ''
@@ -185,20 +192,28 @@ const performRag = (data: string, lastIndex: number) => {
 
     if (data === "[CHAT_STREAM_START]") {
         isChatContentStreaming.value = true
+        chatStreamStartTime.value = Date.now()
+        messages.value[lastIndex].ragEvent!.generate_response_desc = "正在生成最终回复...";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "正在生成最终回复...";
         return
     }
 
     if (data === "[STREAM_DONE]") {
         console.log("[STREAM_DONE]");
+
+        messages.value[lastIndex].ragEvent!.generate_response_time =
+            ((Date.now() - chatStreamStartTime.value) / 1000).toFixed(2) + '秒';
+
+        messages.value[lastIndex].ragEvent!.generate_response_desc = "最终回复完成 :  ";
+        messages.value[lastIndex].ragEvent!.current_event_desc
+            = "完成知识库检索, 分析了" + ragRerankCount.value + "个文本块"
+
+
         isBotResponding.value = false;
         isFollowQuestionLoading.value = true;
         isChatContentStreaming.value = false
+        chatStreamStartTime.value = 0
         showFeedback.value = true;
-
-        messages.value[lastIndex].ragEvent!.generate_response_desc = "最终回复已生成";
-        messages.value[lastIndex].ragEvent!.current_event_desc = "完成知识库检索,分析3个文本";
-        messages.value[lastIndex].ragEvent!.generate_response_time =
-            ((Date.now() - messages.value[lastIndex].ragEvent!.last_event_time) / 1000).toFixed(2) + '秒';
 
         scrollToBottom();
         return
@@ -209,29 +224,29 @@ const performRag = (data: string, lastIndex: number) => {
         scrollToBottom();
         return
     }
+    if (data.startsWith("[retrieve_chunk_done]")) {
+        messages.value[lastIndex].ragEvent!.retrieve_desc = "检索完成 : " + ragRetriveCount.value + "个chunk"
+        messages.value[lastIndex].ragEvent!.current_event_desc = "文本检索完成";
+        messages.value[lastIndex].ragEvent!.retrieve_time = data.split("]")[1] + '秒';
 
-    if (data.startsWith("retrieve_chunk_done")) {
-        messages.value[lastIndex].ragEvent!.retrieve_desc = "完成知识库检索";
-        messages.value[lastIndex].ragEvent!.current_event_desc = "完成知识库检索";
-        messages.value[lastIndex].ragEvent!.retrieve_time =
-            ((Date.now() - messages.value[lastIndex].ragEvent!.last_event_time) / 1000).toFixed(2) + '秒';
+        messages.value[lastIndex].ragEvent!.rerank_desc = "正在进行文本重排序...";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "正在进行文本重排序...";
 
-    } else if (data.startsWith("generate_image_response_start")) {
-        messages.value[lastIndex].ragEvent!.image_qa = "正在进行图像问答...";
+    } else if (data.startsWith("[rerank_chunk_done]")) {
+        messages.value[lastIndex].ragEvent!.rerank_desc = "重排序完成 : " + ragRetriveCount.value + " -> " + ragRerankCount.value;
+        messages.value[lastIndex].ragEvent!.current_event_desc = "文本重排序完成";
+        messages.value[lastIndex].ragEvent!.rerank_time = data.split("]")[1] + '秒';
+
+    } else if (data.startsWith("[generate_image_response_start]")) {
+        messages.value[lastIndex].ragEvent!.image_qa_desc = "正在进行图像问答...";
         messages.value[lastIndex].ragEvent!.current_event_desc = "正在进行图像问答...";
 
-    } else if (data.startsWith("generate_image_response_doone")) {
-        messages.value[lastIndex].ragEvent!.image_qa = "图像问答完成";
-        messages.value[lastIndex].ragEvent!.current_event_desc = "图像问答完成";
-        messages.value[lastIndex].ragEvent!.image_qa_time =
-            ((Date.now() - messages.value[lastIndex].ragEvent!.last_event_time) / 1000).toFixed(2) + '秒';
-
-    } else if (data.startsWith("generate_final_response_start")) {
-        messages.value[lastIndex].ragEvent!.generate_response_desc = "正在生成最终回复...";
-        messages.value[lastIndex].ragEvent!.current_event_desc = "正在生成最终回复...";
+    } else if (data.startsWith("[generate_image_response_doone]")) {
+        messages.value[lastIndex].ragEvent!.image_qa_desc = "图像问答完成  ";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "图像问答完成 : ";
+        messages.value[lastIndex].ragEvent!.image_qa_time = data.split("]")[1] + '秒';
     }
 
-    messages.value[lastIndex].ragEvent!.last_event_time = Date.now();
 
     if (data.startsWith("{\"chunk_frontend_nodes\":")) {
         try {
@@ -433,6 +448,11 @@ const sendMessage = (send_msg: string) => {
             sessionId.value = Date.now();
         }
 
+        const rag_config = {
+            rag_rerank_count: ragRerankCount.value,
+            rag_retrieve_count: ragRetriveCount.value,
+            rag_fusion_count: ragFusionCount.value,
+        };
         const message = {
             multi_turn_chat_enabled: multiTurnChatEnabled.value,
             user_name: localStorage.getItem('username'),
@@ -441,6 +461,7 @@ const sendMessage = (send_msg: string) => {
             image_urls: [...uploadedImages.value],
             model_type: selectedType.value,
             model_name: selectedModel.value,
+            ...rag_config,
             ...props.additionalParams,
         };
 
@@ -571,11 +592,14 @@ const removeImage = (index: number) => {
 };
 
 const toggleSidebar = () => {
+    //从设置界面回来才更新
+    if (showSidebar.value) {
+        selectedType.value = store.state.llmChat.selectedType;
+        selectedModel.value = store.state.llmChat.selectedModel;
+
+        mode_name.value = `${selectedType.value}: ${selectedModel.value}`;
+    }
+
     showSidebar.value = !showSidebar.value;
-
-    selectedType.value = store.state.selectedType;
-    selectedModel.value = store.state.selectedModel;
-
-    mode_name.value = `${selectedType.value}: ${selectedModel.value}`;
 };
 </script>
