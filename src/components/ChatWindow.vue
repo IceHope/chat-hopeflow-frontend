@@ -1,10 +1,10 @@
 <template>
     <div class="chat-window">
-        <div class="chat-header">
-            <div class="toggle-container">
+        <div class="chat-header" v-if="showHeader">
+            <div class="toggle-container" v-if="showToggleContainer">
                 <button class="btn-toggle" @click="toggleSidebar">{{ mode_name }}</button>
             </div>
-            <div class="multi-turn-toggle">
+            <div class="multi-turn-toggle" v-if="showMultiTurnToggle">
                 <label>
                     <input type="checkbox" v-model="multiTurnChatEnabled">
                     支持多轮对话
@@ -14,11 +14,11 @@
 
         <div class="chat-area" ref="chatArea">
             <ChatItemMessage v-for="(message, index) in messages" :key="index" :message="message"
-                :showFeedback="showFeedback" @refresh="handleRefresh" />
+                :showFeedback="showFeedback" :sourceBotType="sourceTypeValue" @refresh="handleRefresh" />
 
             <div v-if="isFollowQuestionVisible" class="chat-follow-questions-warp">
-                <div v-for="(question, index) in questions" :key="index" @click="handleQuestionClick(question)">
-                    <span class="chat-follow-question">{{ question }}</span>
+                <div v-for="(question, index) in questions" :key="index">
+                    <span class="chat-follow-question" @click="handleQuestionClick(question)">{{ question }}</span>
                 </div>
             </div>
             <div v-if="isFollowQuestionLoading" class="chat-follow-questions-loadding">
@@ -52,6 +52,7 @@ import sendAbleIcon from '@/assets/send-able.svg';
 import sendDisableIcon from '@/assets/send-disable.svg';
 import sendStopIcon from '@/assets/send_stop-icon.png';
 import LoadingDots from '@/components/LoadingDots.vue';
+import type { ChatCommonMessage } from "@/store/ChatCommonMessage";
 import { API_CONFIG } from '@/store/config';
 import { eventBus } from '@/utils/eventBus';
 import Settings from '@/views/Settings.vue';
@@ -61,12 +62,6 @@ import { useStore } from 'vuex';
 import '../style/chat-window.css'; // 导入CSS文件
 import ChatItemMessage from './ChatItemMessage.vue';
 
-interface ChatMessage {
-    type: 'user' | 'bot' | 'user-img';
-    text?: string;
-    imageUrl?: string;
-    model?: string;
-}
 
 interface ChatDetails {
     user_name: string;
@@ -95,12 +90,28 @@ const props = defineProps({
         type: String,
         default: 'Type your message here...',
     },
+    showHeader: {
+        type: Boolean,
+        default: true,
+    },
+    showToggleContainer: {
+        type: Boolean,
+        default: true,
+    },
+    showMultiTurnToggle: {
+        type: Boolean,
+        default: true,
+    },
+    sourceType: {
+        type: String,
+        default: 'chat',
+    },
 });
 
 const sessionId = ref<number | null>(null);
 const store = useStore();
 const socket = ref<WebSocket | null>(null);
-const messages = ref<ChatMessage[]>([]);
+const messages = ref<ChatCommonMessage[]>([]);
 const questions = ref<string[]>([]);
 const isFollowQuestionVisible = ref(false);
 const isFollowQuestionLoading = ref(false);
@@ -119,7 +130,12 @@ const selectedType = ref(store.state.selectedType);
 const selectedModel = ref(store.state.selectedModel);
 const mode_name = ref(`${selectedType.value}: ${selectedModel.value}`);
 const isFirstResponse = ref(true);
+const isChatContentStreaming = ref(false)
 const multiTurnChatEnabled = ref(true);
+
+const sourceTypeValue = ref(props.sourceType); // 解析并保存sourceType属性
+console.log("sourceTypeValue =", sourceTypeValue.value)
+
 
 watch([newMessage, isBotResponding], ([newValue, botResponding]) => {
     isButtonDisabled.value = (newValue.trim() === "") && (!botResponding);
@@ -145,12 +161,106 @@ function handleQuestionClick(question: string) {
     console.log('Clicked question:', question);
     sendMessage(question);
 }
+const performRag = (data: string, lastIndex: number) => {
+    if (messages.value[lastIndex]?.type !== 'bot') {
+        let ragEventChatItem = {
+            retrieve_start_time: Date.now(),
+            last_event_time: Date.now(),
+            current_event_desc: '正在检索知识库 ...',
+            retrieve_desc: '正在检索知识库 ...',
+            retrieve_time: '',
+            image_qa: '',
+            image_qa_time: '',
+            generate_response_desc: '',
+            generate_response_time: ''
+        };
+
+        messages.value.push({
+            type: 'bot',
+            model: selectedModel.value,
+            ragEvent: ragEventChatItem
+        });
+        return
+    }
+
+    if (data === "[CHAT_STREAM_START]") {
+        isChatContentStreaming.value = true
+        return
+    }
+
+    if (data === "[STREAM_DONE]") {
+        console.log("[STREAM_DONE]");
+        isBotResponding.value = false;
+        isFollowQuestionLoading.value = true;
+        isChatContentStreaming.value = false
+        showFeedback.value = true;
+
+        messages.value[lastIndex].ragEvent!.generate_response_desc = "最终回复已生成";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "完成知识库检索,分析3个文本";
+        messages.value[lastIndex].ragEvent!.generate_response_time =
+            ((Date.now() - messages.value[lastIndex].ragEvent!.last_event_time) / 1000).toFixed(2) + '秒';
+
+        scrollToBottom();
+        return
+    }
+
+    if (isChatContentStreaming.value) {
+        messages.value[lastIndex].text = (messages.value[lastIndex].text || '') + data;
+        scrollToBottom();
+        return
+    }
+
+    if (data.startsWith("retrieve_chunk_done")) {
+        messages.value[lastIndex].ragEvent!.retrieve_desc = "完成知识库检索";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "完成知识库检索";
+        messages.value[lastIndex].ragEvent!.retrieve_time =
+            ((Date.now() - messages.value[lastIndex].ragEvent!.last_event_time) / 1000).toFixed(2) + '秒';
+
+    } else if (data.startsWith("generate_image_response_start")) {
+        messages.value[lastIndex].ragEvent!.image_qa = "正在进行图像问答...";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "正在进行图像问答...";
+
+    } else if (data.startsWith("generate_image_response_doone")) {
+        messages.value[lastIndex].ragEvent!.image_qa = "图像问答完成";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "图像问答完成";
+        messages.value[lastIndex].ragEvent!.image_qa_time =
+            ((Date.now() - messages.value[lastIndex].ragEvent!.last_event_time) / 1000).toFixed(2) + '秒';
+
+    } else if (data.startsWith("generate_final_response_start")) {
+        messages.value[lastIndex].ragEvent!.generate_response_desc = "正在生成最终回复...";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "正在生成最终回复...";
+    }
+
+    messages.value[lastIndex].ragEvent!.last_event_time = Date.now();
+
+    if (data.startsWith("{\"chunk_frontend_nodes\":")) {
+        try {
+            const jsonData = JSON.parse(data);
+            if (jsonData.chunk_frontend_nodes && Array.isArray(jsonData.chunk_frontend_nodes)) {
+                const chunkFrontendNodes = jsonData.chunk_frontend_nodes.map((node: any) => ({
+                    score: node.score,
+                    file_id: node.file_id,
+                    node_id: node.node_id,
+                    text: node.text,
+                    file_type: node.file_type,
+                    file_path: node.file_path,
+                    file_name: node.file_name,
+                    image_base64: node.image_base64
+                }));
+                console.log("解析出的chunk_frontend_nodes:", chunkFrontendNodes);
+                messages.value[lastIndex].ragChunkList = chunkFrontendNodes;
+            }
+        } catch (error) {
+            console.error("解析chunk_frontend_nodes数据时出错:", error);
+        }
+    }
+}
 
 const initWebSocket = () => {
     socket.value = new WebSocket(props.WebUrl);
 
     socket.value.addEventListener('open', () => {
-        console.log('Connected to server');
+        console.log('已连接到服务器');
     });
 
     socket.value.addEventListener('message', (event) => {
@@ -159,7 +269,7 @@ const initWebSocket = () => {
 
         if (isFirstResponse.value) {
             eventBus.$emit('performSendNewSession', sessionId.value);
-            console.log('performSendNewSession');
+            console.log('执行发送新会话');
             isFirstResponse.value = false;
         }
 
@@ -172,20 +282,33 @@ const initWebSocket = () => {
             return;
         }
 
+
+        if (sourceTypeValue.value === "rag") {
+            performRag(data, lastIndex)
+            scrollToBottom();
+            return
+        }
+
         if (data === "[STREAM_DONE]") {
             console.log("[STREAM_DONE]");
             isBotResponding.value = false;
             isFollowQuestionLoading.value = true;
             showFeedback.value = true;
-        } else if (messages.value[lastIndex]?.type !== 'bot') {
+            scrollToBottom();
+            return
+        }
+
+        if (messages.value[lastIndex]?.type !== 'bot') {
             messages.value.push({
                 type: 'bot',
                 text: data,
                 model: selectedModel.value,
             });
-        } else {
-            messages.value[lastIndex].text = (messages.value[lastIndex].text || '') + data;
+            scrollToBottom();
+            return
         }
+
+        messages.value[lastIndex].text = (messages.value[lastIndex].text || '') + data;
         scrollToBottom();
     });
 

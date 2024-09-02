@@ -18,7 +18,12 @@
                 <div class="message-bot-model">
                     <span>{{ botModel }}</span>
                 </div>
+
                 <div class="message-content message-bot-content">
+                    <div v-if="sourceBotType === 'rag'" class="message-source-type">
+                        <RagDetail :ragChunkNodes="message.ragChunkList || []" :ragEvent="message.ragEvent || null">
+                        </RagDetail>
+                    </div>
                     <span v-if="message.text" v-html="renderedMarkdown"></span>
                 </div>
 
@@ -32,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import type { ChatCommonMessage } from "@/store/ChatCommonMessage";
 import "@/style/chat-message.css";
 import hljs from "highlight.js";
 import "highlight.js/styles/monokai-sublime.css"; // 引入 monokai 主题样式
@@ -39,21 +45,17 @@ import MarkdownIt from "markdown-it";
 import { marked } from "marked";
 import { computed } from "vue";
 import ChatFeedback from "./ChatFeedback.vue";
-
-interface Message {
-    type: "user" | "bot" | "user-img";
-    text?: string;
-    imageUrl?: string;
-    model?: string;
-}
+import RagDetail from "./RagDetail.vue";
 
 interface Props {
-    message: Message;
+    message: ChatCommonMessage;
     showFeedback: boolean;
+    sourceBotType: string;
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits(["refresh"]);
+
 
 // 动态导入图片
 const userPhoto = new URL("@/assets/happy_boy.jpg", import.meta.url).href;

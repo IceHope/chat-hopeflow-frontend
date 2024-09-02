@@ -1,41 +1,29 @@
 <template>
-    <el-col>
-        <h2>Chat Hope</h2>
-        <el-menu class="el-menu-vertical-demo">
-            <el-menu-item @click="navigate('Chat')" index="chat" size="60">
-                <el-icon>
-                    <Reading />
-                </el-icon>
-                <span>Navigator Two</span>
-            </el-menu-item>
-
-            <el-menu-item index="bug">
-                <el-icon :size="200" color="#5989F7">
-                    <setting />
-                </el-icon>
-                <span>Navigator Four</span>
-            </el-menu-item>
-        </el-menu>
-    </el-col>
-
+    <div class="translate-agent">
+        <ChatWindow :WebUrl="WebUrl" :additionalParams="additionalParams" :InputPlaceholder="InputPlaceholder"
+            :showHeader="showHeader" :sourceType="sourceType" />
+    </div>
 </template>
 
-<script lang="ts" setup>
-import {
-    Reading,
-    Setting
-} from '@element-plus/icons-vue';
-import { useRouter } from 'vue-router'; // 引入 useRouter
-const handleSelect = (key: string, keyPath: string[]) => {
-    console.log("handleSelect", key, keyPath)
-}
-const router = useRouter(); // 获取 router 实例
+<script setup lang="ts">
+import ChatWindow from '@/components/ChatWindow.vue';
+import { API_CONFIG } from '@/store/config';
+import { ref } from 'vue';
 
-const navigate = (routeName: string) => {
-    // router.push({ name: routeName }); // 路由跳转
-    console.log("navigate", routeName)
+interface AdditionalParams {
+    human_flag: boolean;
 }
+
+const WebUrl = ref<string>(`${API_CONFIG.wsUrl}/rag/chat_query`);
+const additionalParams = ref<AdditionalParams>({
+    human_flag: true,
+});
+const InputPlaceholder = ref<string>('请输入问题shift+回车换行,回车发送');
+const showHeader = ref<boolean>(false);
+const sourceType = ref<string>("rag")
 
 </script>
 
-<style scoped></style>
+<style scoped>
+/* ... (styles remain the same) ... */
+</style>

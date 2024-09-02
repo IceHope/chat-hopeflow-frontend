@@ -4,11 +4,15 @@
         <div>
             <LoadingDots />
         </div>
+        <div>
+            <RagDetail></RagDetail>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import LoadingDots from '@/components/LoadingDots.vue';
+import RagDetail from '@/components/RagDetail.vue';
 import { computed } from "vue";
 import { useStore } from 'vuex';
 

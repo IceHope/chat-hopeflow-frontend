@@ -49,6 +49,7 @@ const menuItems: MenuItem[] = [
     { routeName: 'chat', icon: '💬', text: '对话' },
     { routeName: 'rag', icon: '📚', text: 'RAG' },
     { routeName: 'agent', icon: '🤖', text: '智能体' },
+    { routeName: 'knowledge', icon: '📚', text: '知识库' },
 ];
 
 const navigate = (routeName: string) => {
