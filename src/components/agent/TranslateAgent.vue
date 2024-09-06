@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { API_CONFIG } from '@/store/config';
+import { API_URL } from '@/constants/api_url';
 import { ref } from 'vue';
 import ChatWindow from '../ChatWindow.vue';
 
@@ -34,7 +34,7 @@ interface AdditionalParams {
     human_flag: boolean;
 }
 
-const WebUrl = ref<string>(`${API_CONFIG.wsUrl}/agent/translate_human`);
+const WebUrl = API_URL.wsAgentTranslateHuman
 const additionalParams = ref<AdditionalParams>({
     source_lang: '英文',
     target_lang: '中文',

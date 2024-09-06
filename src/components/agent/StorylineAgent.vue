@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { API_CONFIG } from '@/store/config';
+import { API_URL } from '@/constants/api_url';
 import { ref } from 'vue';
 import ChatWindow from '../ChatWindow.vue';
 
@@ -20,7 +20,7 @@ interface AdditionalParams {
     human_flag: boolean;
 }
 
-const WebUrl = ref<string>(`${API_CONFIG.wsUrl}/agent/storyline`);
+const WebUrl = API_URL.wsAgentStoryLineUrl
 const additionalParams = ref<AdditionalParams>({
     human_flag: true,
 });

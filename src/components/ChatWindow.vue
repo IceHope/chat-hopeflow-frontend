@@ -1,16 +1,19 @@
 <template>
     <div class="chat-window">
         <div class="chat-header" v-if="showHeader">
-            <div class="toggle-container" v-if="showToggleContainer">
-                <button class="btn-toggle" @click="toggleSidebar">{{ mode_name }}</button>
+            <div>
+                <div class="chat-model-select" @click="toggleDropdown">
+                    <span class="model-select">{{ selectedModel }}</span>
+                    <img src="@/assets/down-more-icon.svg">
+                </div>
             </div>
-            <div class="multi-turn-toggle" v-if="showMultiTurnToggle">
-                <label>
-                    <input type="checkbox" v-model="multiTurnChatEnabled">
-                    支持多轮对话
-                </label>
+
+            <div class="dropdown-wrap" v-if="showDropdown">
+                <ModelSelect :modelList="modelList" @selectModelItem="handleModelSelect"></ModelSelect>
             </div>
         </div>
+        <!-- 遮罩层，点击后关闭下拉框 -->
+        <div v-if="showDropdown" class="overlay" @click="closeDropdown"></div>
 
         <div class="chat-area" ref="chatArea">
             <ChatItemMessage v-for="(message, index) in messages" :key="index" :message="message"
@@ -43,7 +46,7 @@
                     :class="{ disabled: isButtonDisabled }" />
             </div>
         </div>
-        <Settings :isActive="showSidebar" @close="toggleSidebar" />
+
     </div>
 </template>
 
@@ -52,15 +55,15 @@ import sendAbleIcon from '@/assets/send-able.svg';
 import sendDisableIcon from '@/assets/send-disable.svg';
 import sendStopIcon from '@/assets/send_stop-icon.png';
 import LoadingDots from '@/components/LoadingDots.vue';
-import type { ChatCommonMessage } from "@/store/ChatCommonMessage";
-import { API_CONFIG } from '@/store/config';
+import { API_URL } from '@/constants/api_url';
+import type { ChatCommonMessage } from "@/interface/chat_common_message";
 import { eventBus } from '@/utils/eventBus';
-import Settings from '@/views/Settings.vue';
 import { ElMessage } from 'element-plus';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import '../style/chat-window.css'; // 导入CSS文件
 import ChatItemMessage from './ChatItemMessage.vue';
+import ModelSelect, { type SelectModelItem } from './ModelSelect.vue';
 
 
 interface ChatDetails {
@@ -74,8 +77,8 @@ interface ChatHistoryItem {
     model_name?: string;
 }
 
-const chatHistoryUrl = `${API_CONFIG.rootUrl}/chat/history/record`;
-const imageUploadUrl = `${API_CONFIG.rootUrl}/images/upload`;
+const chatHistoryUrl = API_URL.chatHistoryUrl
+const imageUploadUrl = API_URL.imageUploadUrl
 
 const props = defineProps({
     WebUrl: {
@@ -91,14 +94,6 @@ const props = defineProps({
         default: 'Type your message here...',
     },
     showHeader: {
-        type: Boolean,
-        default: true,
-    },
-    showToggleContainer: {
-        type: Boolean,
-        default: true,
-    },
-    showMultiTurnToggle: {
         type: Boolean,
         default: true,
     },
@@ -126,9 +121,9 @@ const isBotResponding = ref(false); // 控制输入框和按钮的禁用状态
 const isButtonDisabled = ref(true); // 按钮禁用状态
 const uploadedImages = ref<string[]>([]); // 存储多个上传的图片Base64数据
 
-const selectedType = ref(store.state.llmChat.selectedType);
-const selectedModel = ref(store.state.llmChat.selectedModel);
-const mode_name = ref(`${selectedType.value}: ${selectedModel.value}`);
+const selectedType = computed(() => store.state.llmChat.selectedType);
+const selectedModel = computed(() => store.state.llmChat.selectedModel);
+
 const isFirstResponse = ref(true);
 const isChatContentStreaming = ref(false)
 const multiTurnChatEnabled = ref(true);
@@ -137,11 +132,32 @@ const chatStreamStartTime = ref<number>(0)
 const sourceTypeValue = ref(props.sourceType); // 解析并保存sourceType属性
 console.log("sourceTypeValue =", sourceTypeValue.value)
 
+const commands = ref(store.state.config.commands)
+
 const ragMultiTurnChatEnabled = computed(() => store.state.rag.multiTurnChatEnabled);
 const ragRerankCount = computed(() => store.state.rag.rerankCount);
 const ragRetriveCount = computed(() => store.state.rag.retriveCount);
 const ragFusionCount = computed(() => store.state.rag.fusionCount);
 
+const modelList = store.state.config.models.llm
+
+const handleModelSelect = (data: SelectModelItem) => {
+    const { model_item, model_name_item } = data;
+    console.log("父组件接收到的选中项:", model_item, model_name_item);
+    store.dispatch('llmChat/updateType', model_item.owner_type);
+    store.dispatch('llmChat/updateModel', model_name_item.name);
+    toggleDropdown()
+    // 在这里处理选中的项，例如更新状态或发起请求
+};
+const showDropdown = ref(false);
+
+const toggleDropdown = () => {
+    showDropdown.value = !showDropdown.value;
+};
+// 点击其他区域时关闭下拉框
+const closeDropdown = () => {
+    showDropdown.value = false;
+};
 
 watch([newMessage, isBotResponding], ([newValue, botResponding]) => {
     isButtonDisabled.value = (newValue.trim() === "") && (!botResponding);
@@ -171,8 +187,10 @@ const performRag = (data: string, lastIndex: number) => {
     if (messages.value[lastIndex]?.type !== 'bot') {
         console.log("data =", data, Date.now())
         let ragEventChatItem = {
-            current_event_desc: '正在检索文本...',
-            retrieve_desc: '正在检索文本...',
+            current_event_desc: '正在分析问题意图...',
+            query_parse_desc: "正在分析问题意图...",
+            query_parse_time: "",
+            retrieve_desc: '',
             retrieve_time: '',
             rerank_desc: '',
             rerank_time: "",
@@ -190,7 +208,7 @@ const performRag = (data: string, lastIndex: number) => {
         return
     }
 
-    if (data === "[CHAT_STREAM_START]") {
+    if (data.startsWith(commands.value["chat_stream_serve_start"])) {
         isChatContentStreaming.value = true
         chatStreamStartTime.value = Date.now()
         messages.value[lastIndex].ragEvent!.generate_response_desc = "正在生成最终回复...";
@@ -198,8 +216,8 @@ const performRag = (data: string, lastIndex: number) => {
         return
     }
 
-    if (data === "[STREAM_DONE]") {
-        console.log("[STREAM_DONE]");
+    if (data.startsWith(commands.value["chat_stream_serve_done"])) {
+        console.log("[chat_stream_serve_done]");
 
         messages.value[lastIndex].ragEvent!.generate_response_time =
             ((Date.now() - chatStreamStartTime.value) / 1000).toFixed(2) + '秒';
@@ -224,29 +242,46 @@ const performRag = (data: string, lastIndex: number) => {
         scrollToBottom();
         return
     }
-    if (data.startsWith("[retrieve_chunk_done]")) {
+    if (data.startsWith(commands.value["rag_retrieve_chunk_done"])) {
         messages.value[lastIndex].ragEvent!.retrieve_desc = "检索完成 : " + ragRetriveCount.value + "个chunk"
         messages.value[lastIndex].ragEvent!.current_event_desc = "文本检索完成";
         messages.value[lastIndex].ragEvent!.retrieve_time = data.split("]")[1] + '秒';
 
-        messages.value[lastIndex].ragEvent!.rerank_desc = "正在进行文本重排序...";
-        messages.value[lastIndex].ragEvent!.current_event_desc = "正在进行文本重排序...";
+        messages.value[lastIndex].ragEvent!.rerank_desc = "正在进行重排序...";
+        messages.value[lastIndex].ragEvent!.current_event_desc = "正在进行重排序...";
 
-    } else if (data.startsWith("[rerank_chunk_done]")) {
+    } else if (data.startsWith(commands.value["rag_rerank_chunk_done"])) {
         messages.value[lastIndex].ragEvent!.rerank_desc = "重排序完成 : " + ragRetriveCount.value + " -> " + ragRerankCount.value;
         messages.value[lastIndex].ragEvent!.current_event_desc = "文本重排序完成";
         messages.value[lastIndex].ragEvent!.rerank_time = data.split("]")[1] + '秒';
 
-    } else if (data.startsWith("[generate_image_response_start]")) {
+    } else if (data.startsWith(commands.value["rag_event_image_qa_start"])) {
         messages.value[lastIndex].ragEvent!.image_qa_desc = "正在进行图像问答...";
         messages.value[lastIndex].ragEvent!.current_event_desc = "正在进行图像问答...";
 
-    } else if (data.startsWith("[generate_image_response_doone]")) {
+    } else if (data.startsWith(commands.value["rag_event_image_qa_done"])) {
         messages.value[lastIndex].ragEvent!.image_qa_desc = "图像问答完成  ";
         messages.value[lastIndex].ragEvent!.current_event_desc = "图像问答完成 : ";
         messages.value[lastIndex].ragEvent!.image_qa_time = data.split("]")[1] + '秒';
     }
 
+    if (data.startsWith("{\"rag_parse_context_question\":")) {
+        try {
+            const jsonData = JSON.parse(data);
+            const receive_text = jsonData.rag_parse_context_question
+            if (receive_text) {
+                const parse_question = receive_text.split("[rag_parse_question_done]")[0]
+                const cost_time = receive_text.split("[rag_parse_question_done]")[1]
+                messages.value[lastIndex].ragEvent!.query_parse_desc = "意图解析完成: " + parse_question
+                messages.value[lastIndex].ragEvent!.query_parse_time = cost_time + '秒';
+
+                messages.value[lastIndex].ragEvent!.retrieve_desc = "正在检索知识块..."
+                messages.value[lastIndex].ragEvent!.current_event_desc = "正在检索知识块...";
+            }
+        } catch (error) {
+            console.error("解析问题时出错:", error);
+        }
+    }
 
     if (data.startsWith("{\"chunk_frontend_nodes\":")) {
         try {
@@ -304,8 +339,8 @@ const initWebSocket = () => {
             return
         }
 
-        if (data === "[STREAM_DONE]") {
-            console.log("[STREAM_DONE]");
+        if (data === commands.value["chat_stream_serve_done"]) {
+            console.log("[chat_stream_serve_done]");
             isBotResponding.value = false;
             isFollowQuestionLoading.value = true;
             showFeedback.value = true;
@@ -455,6 +490,7 @@ const sendMessage = (send_msg: string) => {
         };
         const message = {
             multi_turn_chat_enabled: multiTurnChatEnabled.value,
+            rag_multi_turn_chat_enabled: ragMultiTurnChatEnabled.value,
             user_name: localStorage.getItem('username'),
             session_id: sessionId.value,
             data: send_msg,
@@ -483,7 +519,7 @@ const stopBot = () => {
         isBotResponding.value = false;
 
         const message = {
-            command: "[CLIENT_STOP]",
+            command: commands.value["chat_stream_client_stop"],
             ...props.additionalParams,
         };
         socket.value.send(JSON.stringify(message));
@@ -591,15 +627,4 @@ const removeImage = (index: number) => {
     uploadedImages.value.splice(index, 1);
 };
 
-const toggleSidebar = () => {
-    //从设置界面回来才更新
-    if (showSidebar.value) {
-        selectedType.value = store.state.llmChat.selectedType;
-        selectedModel.value = store.state.llmChat.selectedModel;
-
-        mode_name.value = `${selectedType.value}: ${selectedModel.value}`;
-    }
-
-    showSidebar.value = !showSidebar.value;
-};
 </script>

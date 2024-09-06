@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { API_CONFIG } from "@/store/config";
+import type { ModelNameSchema, ModelSchema } from "@/interface/model_schema";
 import { ElMessage } from "element-plus";
 import "element-plus/dist/index.css"; // 导入 Element Plus 样式
 import { onMounted, ref, watch } from "vue";
@@ -39,30 +39,17 @@ import { useStore } from "vuex";
 
 const store = useStore();
 
-const chatModelUrl = `${API_CONFIG.rootUrl}/chat/modes`;
-
-interface ChatType {
-    type: string;
-    desc: string;
-    names: Model[];
-}
-
-interface Model {
-    name: string;
-    input_price: number;
-    output_price: number;
-}
 
 const selectedType = ref<string>("");
 const selectedModel = ref<string>("");
-const chatTypes = ref<ChatType[]>([]);
-const filteredModels = ref<Model[]>([]);
+const chatTypes = ref<ModelSchema[]>([]);
+const filteredModels = ref<ModelNameSchema[]>([]);
 const inputPrice = ref<number>(0);
 const outputPrice = ref<number>(0);
 
 const fetchChatTypes = async () => {
     try {
-        const response = await fetch(chatModelUrl);
+        const response = await fetch("");
         if (!response.ok) {
             ElMessage("Failed to fetch chat types");
             throw new Error("Failed to fetch chat types");

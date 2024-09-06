@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RagChunkNode } from "@/store/RagItem";
+import type { RagChunkNode } from "@/interface/rag_item";
 import { marked } from 'marked';
 import { defineProps, ref } from 'vue';
 

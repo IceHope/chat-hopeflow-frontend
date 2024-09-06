@@ -10,6 +10,19 @@
         </div>
         <div class="content">
             <div v-if="isTextSectionVisible" class="text-section">
+                <div v-if="props.ragEvent.query_parse_desc" class="text-item">
+                    <el-icon v-if="!props.ragEvent.query_parse_time">
+                        <Loading />
+                    </el-icon>
+                    <el-icon v-else>
+                        <SuccessFilled />
+                    </el-icon>
+                    <span class="query_parse-desc">{{ props.ragEvent.query_parse_desc }}</span>
+                    <span v-if="props.ragEvent.query_parse_time" class="query-parse-time">{{
+                        props.ragEvent.query_parse_time
+                        }}</span>
+                </div>
+
                 <div v-if="props.ragEvent.retrieve_desc" class="text-item">
                     <el-icon v-if="!props.ragEvent.retrieve_time">
                         <Loading />
@@ -33,7 +46,6 @@
                     <span v-if="props.ragEvent.rerank_time" class="rerank-time">{{ props.ragEvent.rerank_time
                         }}</span>
                 </div>
-
 
                 <div v-if="props.ragEvent.image_qa_desc" class="text-item">
                     <el-icon v-if="!props.ragEvent.image_qa_time">
@@ -66,7 +78,10 @@
                         <div class="item-content">{{ item.text }}</div>
                     </div>
                     <div class="item-bottom">
-                        <span class="item-file-type">{{ item.file_type }}</span>
+                        <!-- <span v-if="isImageType(item.file_type)" class="item-file-type"
+                            :class="{ 'bold': isImageType(item.file_type) }">
+                            {{ item.file_type }}
+                        </span> -->
                         <div v-if="item.score" class="item-score">score: {{ parseFloat(item.score).toFixed(2) }}</div>
                     </div>
                 </div>
@@ -79,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RagChunkNode, RagEvent } from "@/store/RagItem";
+import type { RagChunkNode, RagEvent } from "@/interface/rag_item";
 import { ArrowDown, ArrowUp, Loading, SuccessFilled } from '@element-plus/icons-vue';
 import { defineProps, ref } from 'vue';
 import RagNodeDialog from "./RagNodeDialog.vue";
@@ -108,6 +123,11 @@ const selectedItem = ref<RagChunkNode>({
     file_name: '',
     image_base64: ''
 });
+
+const isImageType = (fileType: string): boolean => {
+    const imageTypes = ["image/png", "image/jpeg", "image/jpg"];
+    return imageTypes.includes(fileType);
+};
 
 const toggleTextSection = () => {
     isTextSectionVisible.value = !isTextSectionVisible.value;
@@ -226,5 +246,10 @@ const showItemDetails = (item: RagChunkNode) => {
     -webkit-box-orient: vertical;
     color: #606266;
     font-size: 0.9em;
+}
+
+.bold {
+    font-weight: bold;
+    color: black;
 }
 </style>

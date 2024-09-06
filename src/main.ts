@@ -7,8 +7,17 @@ import store from './store';
 import './style/main.css';
 import './style/variables.css';
 
-createApp(App).
-    use(ElementPlus).
-    use(router).
-    use(store).
-    mount('#app');
+const app = createApp(App);
+
+app.use(ElementPlus);
+app.use(router);
+app.use(store);
+
+// 在应用启动时加载配置
+store.dispatch('config/loadConfig').then(() => {
+    // 在配置加载完成后挂载应用
+    app.mount('#app');
+}).catch(error => {
+    console.error('Error loading config:', error);
+    app.mount('#app');  // 即使加载失败，也继续挂载应用
+});

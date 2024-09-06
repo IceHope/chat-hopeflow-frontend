@@ -5,14 +5,27 @@ export interface RagState {
     rerankCount: number;
     retriveCount: number;
     fusionCount: number;
+
+    rerankModelType: string;
+    rerankModelName: string;
+
+    multiModalType: string;
+    multiModalName: string;
 }
 
 const state: RagState = {
     multiTurnChatEnabled: false,
     isExpandDetailProcess: true,
+
     rerankCount: 3,
     retriveCount: 6,
-    fusionCount: 3
+    fusionCount: 3,
+
+    rerankModelType: '',
+    rerankModelName: '',
+
+    multiModalType: '',
+    multiModalName: '',
 };
 
 // mutations
@@ -32,6 +45,18 @@ const mutations = {
     setFusionCount(state: RagState, count: number) {
         state.fusionCount = count;
     },
+    setRerankModelType(state: RagState, type: string) {
+        state.rerankModelType = type;
+    },
+    setRerankModelName(state: RagState, name: string) {
+        state.rerankModelName = name;
+    },
+    setMultiModalType(state: RagState, type: string) {
+        state.multiModalType = type;
+    },
+    setMultiModalName(state: RagState, name: string) {
+        state.multiModalName = name;
+    },
 };
 
 // actions
@@ -50,6 +75,18 @@ const actions = {
     },
     updateFusionCount({ commit }: { commit: Function }, count: number) {
         commit('setFusionCount', count);
+    },
+    updateRerankModelType({ commit }: { commit: Function }, type: string) {
+        commit('setRerankModelType', type);
+    },
+    updateRerankModelName({ commit }: { commit: Function }, name: string) {
+        commit('setRerankModelName', name);
+    },
+    updateMultiModalType({ commit }: { commit: Function }, type: string) {
+        commit('setMultiModalType', type);
+    },
+    updateMultiModalName({ commit }: { commit: Function }, name: string) {
+        commit('setMultiModalName', name);
     },
 };
 

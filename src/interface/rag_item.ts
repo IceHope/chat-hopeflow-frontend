@@ -25,6 +25,8 @@ export interface RagChunkNode {
 
 export interface RagEvent {
     current_event_desc: string
+    query_parse_desc: string
+    query_parse_time: string
     retrieve_desc: string
     retrieve_time: string
     rerank_desc: string

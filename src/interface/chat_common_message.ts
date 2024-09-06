@@ -1,4 +1,4 @@
-import type { RagChunkNode, RagEvent } from "./RagItem";
+import type { RagChunkNode, RagEvent } from "./rag_item";
 
 export interface ChatCommonMessage {
     type: 'user' | 'bot' | 'user-img';

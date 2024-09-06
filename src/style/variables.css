@@ -2,6 +2,7 @@
 :root {
     --primary-color: #5989F7;
     --chat-background-color: #F5F5F5;
-    --chat-background-color-hover: #EAEAEC;
+    --chat-background-color-hover: #F1F2F3;
     --chat-user-backgroud-color: #E0DFFF;
+    --primary-text-ccolor: #B5BCC4;
 }

@@ -11,8 +11,7 @@
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input v-model="password" type="password" id="password" placeholder="Enter your password"
-                    @input="validatePassword" />
+                <input v-model="password" type="password" id="password" placeholder="Enter your password" />
                 <p v-if="passwordHint" class="hint-text">{{ passwordHint }}</p>
             </div>
 
@@ -29,14 +28,16 @@
 </template>
 
 <script setup lang="ts">
-import { API_CONFIG, LOCAL_STORE_ITEM } from '@/store/config';
+import { API_URL } from '@/constants/api_url';
+import { LOCAL_STORE_ITEM } from '@/constants/user';
+import store from '@/store';
 import { ElMessage } from 'element-plus';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router'; // 引入 useRouter
 
-const registerUrl = `${API_CONFIG.rootUrl}/user/register/`;
-const loginUrl = `${API_CONFIG.rootUrl}/user/login/`;
-const fogetPasswordUrl = `${API_CONFIG.rootUrl}/user/forgot_password/`;
+const registerUrl = API_URL.registerUrl;
+const loginUrl = API_URL.loginUrl;
+const fogetPasswordUrl = API_URL.fogetPasswordUrl
 
 const router = useRouter(); // 获取 router 实例
 
@@ -111,9 +112,6 @@ const signUp = async () => {
             usernameError.value = '';
             ElMessage.success('注册成功');
 
-            // Save token to localStorage
-            localStorage.setItem(`${LOCAL_STORE_ITEM.authToken}`, data.access_token);
-
             // Automatically login after successful registration
             await signIn();
         }
@@ -157,6 +155,8 @@ const signIn = async () => {
             // Save token to localStorage
             localStorage.setItem(`${LOCAL_STORE_ITEM.authToken}`, data.access_token);
             localStorage.setItem(`${LOCAL_STORE_ITEM.userName}`, username.value);
+
+            store.dispatch('user/updateName', username.value);
 
             // Redirect to chat or dashboard
             router.push({ name: 'home' });
@@ -202,6 +202,7 @@ const checkAuthStatus = () => {
         console.log('User is already logged in');
         console.log('savedUsername :' + savedUsername);
         ElMessage.info('用户已登录');
+        store.dispatch('user/updateName', savedUsername);
         router.push({ name: 'home' });
     } else {
         console.log('User is not logged in');

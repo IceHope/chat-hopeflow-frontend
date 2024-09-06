@@ -19,12 +19,12 @@ import Sidebar from '@/views/Sidebar.vue';
 }
 
 .sidebar {
-  width: 10%;
+  width: 12%;
   height: 100vh;
 }
 
 .main-content {
-  width: 100%;
+  width: 88%;
   height: 100vh;
   overflow: hidden;
   background-color: var(--chat-background-color);

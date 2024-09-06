@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ChatCommonMessage } from "@/store/ChatCommonMessage";
+import type { ChatCommonMessage } from "@/interface/chat_common_message";
 import "@/style/chat-message.css";
 import hljs from "highlight.js";
 import "highlight.js/styles/monokai-sublime.css"; // 引入 monokai 主题样式

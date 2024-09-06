@@ -50,14 +50,16 @@
 </template>
 
 <script setup lang="ts">
-import { API_CONFIG } from "@/store/config";
-import type { KnowledgeFileItem } from "@/store/RagItem";
+import { API_URL } from "@/constants/api_url";
+import type { KnowledgeFileItem } from "@/interface/rag_item";
 import { Document, MoreFilled } from '@element-plus/icons-vue';
 import { ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElSwitch } from 'element-plus';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const request_knowledge_url = `${API_CONFIG.rootUrl}/rag/knowledge/query_all`;
+import { useStore } from 'vuex';
+const store = useStore();
+const request_knowledge_url = API_URL.knowledgeQueryAll;
 const router = useRouter();
 
 const files = ref<KnowledgeFileItem[]>([]);
@@ -121,7 +123,7 @@ onMounted(async () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ user_name: "admin_test" })
+            body: JSON.stringify({ user_name: localStorage.getItem('username'), })
         });
         if (!response.ok) {
             const errorData = await response.json();

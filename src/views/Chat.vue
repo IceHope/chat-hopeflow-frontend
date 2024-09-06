@@ -1,5 +1,5 @@
 <template>
-    <div class="chat-container-custom">
+    <div class="chat-root">
         <ChatHistory class="chat-history" />
         <ChatWindow :WebUrl="WebUrl" :InputPlaceholder="InputPlaceholder" class="chat-window" />
     </div>
@@ -9,26 +9,25 @@
 import { ref } from 'vue';
 import ChatHistory from '../components/ChatHistory.vue';
 import ChatWindow from '../components/ChatWindow.vue';
-import { API_CONFIG } from '../store/config';
+import { API_URL } from '../constants/api_url';
 
-const WebUrl = ref(`${API_CONFIG.wsUrl}/chat`); // WebSocket URL
+const WebUrl = API_URL.wsChatUrl; // WebSocket URL
 
 const InputPlaceholder = ref('请您输入问题,shift+回车换行,回车发送');
+
 
 
 </script>
 
 <style scropped>
-.chat-container-custom {
+.chat-root {
     display: flex;
     height: 100vh;
     width: 100%;
-    box-sizing: border-box;
     overflow: hidden;
 }
 
 .chat-history {
-    width: 180px;
     overflow-y: auto;
     /* 启用垂直滚动条以防内容过多 */
     overflow-x: hidden;

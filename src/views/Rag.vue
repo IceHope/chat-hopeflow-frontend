@@ -1,5 +1,6 @@
 <template>
-    <div class="rag-chat-container">
+    <div class="rag-root">
+        <ChatHistory class="chat-history" />
         <ChatWindow :WebUrl="WebUrl" :additionalParams="additionalParams" :InputPlaceholder="InputPlaceholder"
             :showHeader="showHeader" :sourceType="sourceType" />
         <RagConfig></RagConfig>
@@ -9,10 +10,11 @@
 <script setup lang="ts">
 import ChatWindow from '@/components/ChatWindow.vue';
 import RagConfig from '@/components/RagConfig.vue';
-import { API_CONFIG } from '@/store/config';
+import { API_URL } from '@/constants/api_url';
 import { ref } from 'vue';
+import ChatHistory from '../components/ChatHistory.vue';
 
-const WebUrl = ref<string>(`${API_CONFIG.wsUrl}/rag/chat_query`);
+const WebUrl = API_URL.wsRagChatUrl;
 const additionalParams = ref({
     detail_flag: true,
 });
@@ -23,7 +25,7 @@ const sourceType = ref<string>("rag");
 </script>
 
 <style scoped>
-.rag-chat-container {
+.rag-root {
     display: flex;
     height: 100vh;
     width: 100%;

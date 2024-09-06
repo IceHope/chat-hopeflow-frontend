@@ -25,7 +25,8 @@
                             <span class="item-file-type">{{ item.file_type }}</span>
                             <span class="item-size">{{ item.text.length }}字符</span>
                         </div>
-                        <div v-if="item.score" class="item-score">得分: {{ parseFloat(item.score).toFixed(2) }}</div>
+                        <div v-if="item.score && item.score !== '0'" class="item-score">Score: {{
+                            parseFloat(item.score).toFixed(2) }}</div>
                         <div class="item-content-wrap">
                             <div class="item-content">{{ item.text }}</div>
                         </div>
@@ -46,7 +47,7 @@
                     </div>
                     <div class="menu-item">
                         <span class="menu-label">文件大小:</span>
-                        <span class="menu-value">{{ formatFileSize(parsedFileData.file_size) }}</span>
+                        <span class="menu-value">{{ parsedFileData.file_size }}</span>
                     </div>
                     <div class="menu-item">
                         <span class="menu-label">创建日期:</span>
@@ -79,8 +80,8 @@
 </template>
 
 <script setup lang="ts">
-import { API_CONFIG } from "@/store/config";
-import type { KnowledgeFileItem, RagChunkNode } from "@/store/RagItem";
+import { API_URL } from "@/constants/api_url";
+import type { KnowledgeFileItem, RagChunkNode } from "@/interface/rag_item";
 import { ElDialog, ElInput, ElLoading, ElOption, ElSelect } from 'element-plus';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -131,7 +132,7 @@ onMounted(() => {
 const fetchKnowledgeItems = async (fileId: string) => {
     isLoading.value = true;
     try {
-        const response = await fetch(`${API_CONFIG.rootUrl}/rag/knowledge/query_all_chunk_by_file_id`, {
+        const response = await fetch(API_URL.knowledgeChunkByFileIdUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -144,7 +145,7 @@ const fetchKnowledgeItems = async (fileId: string) => {
         const data = await response.json();
         knowledgeItems.value = data.map((item: RagChunkNode) => ({
             ...item,
-            score: ''
+            score: '0'
         }));
         filteredKnowledgeItems.value = knowledgeItems.value;
         fileTypes.value = [...new Set(knowledgeItems.value.map(item => item.file_type))];
@@ -177,7 +178,7 @@ const performVectorSearch = async () => {
     isLoading.value = true;
 
     try {
-        const response = await fetch(`${API_CONFIG.rootUrl}/rag/vector/query_match_chunk`, {
+        const response = await fetch(API_URL.queryMatchChunkUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -209,22 +210,6 @@ const performVectorSearch = async () => {
     } finally {
         isLoading.value = false;
     }
-};
-
-const formatFileSize = (size: number | string) => {
-    if (typeof size === 'string') {
-        size = parseInt(size, 10);
-    }
-    if (isNaN(size) || size === 0) {
-        return '0 B';
-    }
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let i = 0;
-    while (size >= 1024 && i < units.length - 1) {
-        size /= 1024;
-        i++;
-    }
-    return `${size.toFixed(2)} ${units[i]}`;
 };
 
 const formatDate = (dateString: string) => {
@@ -305,9 +290,8 @@ const formatDate = (dateString: string) => {
 
 .summary-container {
     width: 25%;
-    padding-left: 20px;
+    padding-left: 10px;
     border-left: 1px solid #e0e0e0;
-    overflow-y: auto;
 }
 
 .divider {
@@ -327,8 +311,20 @@ const formatDate = (dateString: string) => {
 }
 
 .menu-label {
-    margin-right: 20px;
+    margin-right: 10px;
     font-weight: bold;
+}
+
+.menu-value {
+    display: inline-block;
+    word-wrap: break-word;
+    /* 自动换行 */
+    word-break: break-all;
+    /* 强制换行 */
+    white-space: normal;
+    /* 允许换行 */
+    max-width: 100%;
+    /* 限制最大宽度 */
 }
 
 .tech-params {
