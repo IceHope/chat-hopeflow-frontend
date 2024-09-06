@@ -26,7 +26,7 @@
                             <span class="item-size">{{ item.text.length }}字符</span>
                         </div>
                         <div v-if="item.score && item.score !== '0'" class="item-score">Score: {{
-                            parseFloat(item.score).toFixed(2) }}</div>
+                            parseFloat(String(item.score)).toFixed(2) }}</div>
                         <div class="item-content-wrap">
                             <div class="item-content">{{ item.text }}</div>
                         </div>
