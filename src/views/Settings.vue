@@ -1,7 +1,6 @@
 <template>
     <div class="settings-sidebar" :class="{ active: isActive }">
         <div class="settings-content">
-            <ModeSetting />
         </div>
         <div class="button-container">
             <button @click="closeSidebar">确定</button>
@@ -10,7 +9,6 @@
 </template>
 
 <script setup lang="ts">
-import ModeSetting from '@/components/ModeSetting.vue';
 
 const props = defineProps({
     isActive: {

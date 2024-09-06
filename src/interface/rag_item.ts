@@ -13,7 +13,7 @@ export interface KnowledgeFileItem {
 }
 
 export interface RagChunkNode {
-    score: string;
+    score: string | {};
     file_id: string;
     node_id: string;
     text: string;
