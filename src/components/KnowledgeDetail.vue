@@ -204,7 +204,7 @@ const performVectorSearch = async () => {
                 score: matchedItems.get(item.node_id) || ''
             }))
             .filter(item => item.score !== '')
-            .sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
+            .sort((a, b) => parseFloat(String(b.score)) - parseFloat(String(a.score)));
     } catch (error) {
         console.error('向量检索失败:', error);
     } finally {

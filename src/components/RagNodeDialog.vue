@@ -13,7 +13,7 @@
                     </div>
                     <div class="info-item">
                         <span class="info-label score"><strong>score:</strong></span>
-                        <span class="info-value score">{{ parseFloat(dialogNode.score).toFixed(2) }}</span>
+                        <span class="info-value score">{{ parseFloat(String(dialogNode.score)).toFixed(2) }}</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label"><strong>字符数：</strong></span>

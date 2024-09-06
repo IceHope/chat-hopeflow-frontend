@@ -82,7 +82,8 @@
                             :class="{ 'bold': isImageType(item.file_type) }">
                             {{ item.file_type }}
                         </span> -->
-                        <div v-if="item.score" class="item-score">score: {{ parseFloat(item.score).toFixed(2) }}</div>
+                        <div v-if="item.score" class="item-score">score: {{ parseFloat(String(item.score)).toFixed(2) }}
+                        </div>
                     </div>
                 </div>
             </div>
