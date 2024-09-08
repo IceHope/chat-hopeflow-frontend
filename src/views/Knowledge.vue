@@ -53,7 +53,7 @@
 import { API_URL } from "@/constants/api_url";
 import type { KnowledgeFileItem } from "@/interface/rag_item";
 import { Document, MoreFilled } from '@element-plus/icons-vue';
-import { ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElSwitch } from 'element-plus';
+import { ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElMessage, ElSwitch } from 'element-plus';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -145,6 +145,7 @@ onMounted(async () => {
         }));
     } catch (error) {
         console.error('获取知识库数据失败:', error);
+        ElMessage.error('获取知识库数据失败:' + error)
     }
 });
 </script>

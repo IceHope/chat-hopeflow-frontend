@@ -228,10 +228,13 @@ const performRag = (data: string, lastIndex: number) => {
 
 
         isBotResponding.value = false;
-        isFollowQuestionLoading.value = true;
+        if (sourceTypeValue.value !== "agent") {
+            isFollowQuestionLoading.value = true;
+            showFeedback.value = true;
+        }
+
         isChatContentStreaming.value = false
         chatStreamStartTime.value = 0
-        showFeedback.value = true;
 
         scrollToBottom();
         return
@@ -342,8 +345,24 @@ const initWebSocket = () => {
         if (data === commands.value["chat_stream_serve_done"]) {
             console.log("[chat_stream_serve_done]");
             isBotResponding.value = false;
-            isFollowQuestionLoading.value = true;
-            showFeedback.value = true;
+            if (sourceTypeValue.value !== "agent") {
+                isFollowQuestionLoading.value = true;
+                showFeedback.value = true;
+            }
+
+            scrollToBottom();
+            return
+        }
+        // 对话结束后后端的反馈
+        if (!isBotResponding.value) {
+            console.log(messages.value[lastIndex]?.type)
+            // LOG显示有数据,为何不显示出来?
+            console.log("bot : ", data)
+            messages.value.push({
+                type: 'bot',
+                text: data,
+                model: selectedModel.value,
+            });
             scrollToBottom();
             return
         }

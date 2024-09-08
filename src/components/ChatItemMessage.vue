@@ -59,7 +59,7 @@ const emit = defineEmits(["refresh"]);
 
 // 动态导入图片
 const userPhoto = new URL("@/assets/happy_boy.jpg", import.meta.url).href;
-const botPhoto = new URL("@/assets/girl.jpg", import.meta.url).href;
+const botPhoto = new URL("@/assets/bot-reply.png", import.meta.url).href;
 const userImgPhoto = new URL("@/assets/photo-blank.png", import.meta.url).href;
 
 // 处理事件

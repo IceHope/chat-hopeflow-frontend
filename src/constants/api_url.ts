@@ -48,6 +48,9 @@ export const API_URL: API_URL = {
     get queryMatchChunkUrl() {
         return `${this.rootUrl}/rag/vector/query_match_chunk`;
     },
+    get queryAgentListUrl() {
+        return `${this.rootUrl}/agent/list_all`;
+    },
 };
 
 interface API_URL {
@@ -68,4 +71,5 @@ interface API_URL {
     knowledgeQueryAll: string
     knowledgeChunkByFileIdUrl: string
     queryMatchChunkUrl: string
+    queryAgentListUrl: string
 }
