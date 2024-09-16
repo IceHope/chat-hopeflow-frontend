@@ -354,7 +354,7 @@ const initWebSocket = () => {
             return
         }
         // 对话结束后后端的反馈
-        if (!isBotResponding.value) {
+        if (sourceTypeValue.value === "agent" && !isBotResponding.value) {
             console.log(messages.value[lastIndex]?.type)
             // LOG显示有数据,为何不显示出来?
             console.log("bot : ", data)
