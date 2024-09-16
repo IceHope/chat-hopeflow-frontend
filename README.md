@@ -38,18 +38,15 @@ npm run build
 
 - 登录界面
   
-  ![Login](doc/login.png)
-
+  ![Login](doc/images/login.png)
   
   简单的注册,登录,方便使用username和sesion_id保存历史对话记录,注册的用户名不能重复,忘记密码可以点击忘记密码,后台直接返回密码
-  
-  
 
 - 聊天界面
   
   - 聊天的历史记录保存,UI模仿ChatGPT
     
-    <img title="" src="file:///C:/Users/iceHope/AppData/Roaming/marktext/images/2024-09-14-09-34-25-image.png" alt="" width="669">
+    ![History](doc/images/history.png)
     
     - 使用username和session_id,按照时间顺序保存在redis,点击item,可以查看对应的聊天内容
     
@@ -61,7 +58,7 @@ npm run build
   
   - 模型的选择
     
-    ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-09-43-50-image.png)
+    ![](doc/images/model_select.png)
     
     - 点击左上角,展开所有模型
       
@@ -73,7 +70,7 @@ npm run build
   
   - 聊天界面
     
-    ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-10-01-43-image.png)
+    ![](doc/images/modal.png)
     
     - 支持多轮对话,Redis存取历史记录
     
@@ -87,26 +84,70 @@ npm run build
     
     - 列表展示所有文件
     
-    ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-10-37-53-image.png)
+    ![](doc/images/kb_list.png)
     
     - 针对单个文件的分析
       
       - 可视化查看分块页面
         
-        ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-10-54-21-image.png)
+        ![](doc/images/kb_item.png)
       
       - 点击查看详情,支持PDF中图片的展示
-
-        ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-11-02-01-image.png)
-    
+        
+        ![](doc/images/kb_detail.png)
+      
       - 关键字搜索
-    
-      - ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-10-58-24-image.png)
-    
+      
+      - ![](doc/images/kb_keyword.png)
+      
       - 向量搜索 top_k=6
-    
-      - ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-11-00-06-image.png)
+      
+      - ![](doc/images/kb_vector.png)
 
 - RAG问答
+  ![](doc/images/rag.png)
+  
+  - 可视化配置
+    
+    - 对话设置
+      
+      - 详细的RAG流程,默认打开,可以手动切换
+      
+      - 是否支持多轮对话,多轮对话中,要结合前面的问题,提交给大模型,对最新的问题,意图解析
+    
+    - 召回设置
+      
+      默认召回3个文本,然后检索扩大为6个文本,重排序之后再保存最终的3个文本,用于最终生成
+    
+    - 模型设置
+      
+      - 多模态模型,检索到PDF的图片或者图片文档时,单独用多模态模型,进行问答
+      
+      - 重排序模型, 暂时支持jina的在线API排序,bge本地模型
+  
+  - 问答过程
+    
+    - 详细的RAG流程, 特别的展示了PDF中图片的处理
+      
+      ![](doc/images/rag_img.png)
+    
+    - 文本块详情
+      ![](doc/images/rag_chat_detail.png)
+      
+      - score是重排序模型返回的原始数据
+      - PDF图片的文件路径,是同名PDF文件夹的下面路径,详细逻辑参考后端工程
 
 - Agent
+  
+  - 长故事创作
+    
+    - 可视化配置
+      流程图
+      ![](doc/images//storyline_flow.png)
+    
+    - 全程自动生成
+    
+      ![](doc/images/storyline_auto.png)
+
+    - 全程人工确认
+      ![](doc/images/storyline_handle.png)
