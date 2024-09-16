@@ -38,9 +38,12 @@ npm run build
 
 - 登录界面
   
-  简单的注册,登录,方便使用username和sesion_id保存历史对话记录,注册的用户名不能重复,忘记密码可以点击忘记密码,后台直接返回密码
+  ![Login](doc/login.png)
 
-![](F:\Git\ChatHopeFlow\chat-hopeflow-frontend\doc\login.png)
+  
+  简单的注册,登录,方便使用username和sesion_id保存历史对话记录,注册的用户名不能重复,忘记密码可以点击忘记密码,后台直接返回密码
+  
+  
 
 - 聊天界面
   
