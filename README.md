@@ -1,4 +1,5 @@
-# Frontend 前端页面
+# Frontend 前端页面,说明交互的UI
+ 后端工程链接:[chat-hopeflow-backend](https://github.com/IceHope/chat-hopeflow-backend)
 
 ## 1. 安装方式
 
