@@ -37,16 +37,16 @@ npm run build
 ## 3. 页面概览
 
 - 登录界面
-
+  
   简单的注册,登录,方便使用username和sesion_id保存历史对话记录,注册的用户名不能重复,忘记密码可以点击忘记密码,后台直接返回密码
 
-![](C:\Users\iceHope\Desktop\login.png)
+![](F:\Git\ChatHopeFlow\chat-hopeflow-frontend\doc\login.png)
 
 - 聊天界面
   
   - 聊天的历史记录保存,UI模仿ChatGPT
     
-    ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-09-34-25-image.png)
+    <img title="" src="file:///C:/Users/iceHope/AppData/Roaming/marktext/images/2024-09-14-09-34-25-image.png" alt="" width="669">
     
     - 使用username和session_id,按照时间顺序保存在redis,点击item,可以查看对应的聊天内容
     
@@ -93,17 +93,15 @@ npm run build
         ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-10-54-21-image.png)
       
       - 点击查看详情,支持PDF中图片的展示
-        
-        
-        
+
         ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-11-02-01-image.png)
-      
+    
       - 关键字搜索
-      
+    
       - ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-10-58-24-image.png)
-      
+    
       - 向量搜索 top_k=6
-      
+    
       - ![](C:\Users\iceHope\AppData\Roaming\marktext\images\2024-09-14-11-00-06-image.png)
 
 - RAG问答
