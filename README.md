@@ -143,7 +143,7 @@ npm run build
 
   - 三步翻译法
     
-    ![](doc/images//translate.png)
+    ![](doc/images/translate.png)
   
   - 六顶思维帽
 
@@ -152,8 +152,7 @@ npm run build
   - 长故事创作
     
     - 可视化配置
-      流程图
-      ![](doc/images//storyline_flow.png)
+      ![](doc/images/storyline_setting.png)
     
     - 全程自动生成
     
