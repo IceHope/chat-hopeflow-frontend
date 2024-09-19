@@ -139,6 +139,15 @@ npm run build
       - PDF图片的文件路径,是同名PDF文件夹的下面路径,详细逻辑参考后端工程
 
 - Agent
+  ![](doc/images/agent.png)
+
+  - 三步翻译法
+    
+    ![](doc/images//translate.png)
+  
+  - 六顶思维帽
+
+    ![](doc/images/six_hat.png)
   
   - 长故事创作
     

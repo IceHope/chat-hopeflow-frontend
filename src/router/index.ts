@@ -1,3 +1,5 @@
+import OpenaiO1Agent from '@/components/agent/OpenaiO1Agent.vue';
+import SixHatAgent from '@/components/agent/SixHatAgent.vue';
 import StorylineAgent from '@/components/agent/StorylineAgent.vue';
 import TranslateAgent from '@/components/agent/TranslateAgent.vue';
 import KnowledgeDetail from '@/components/KnowledgeDetail.vue';
@@ -19,6 +21,8 @@ const routes = [
     { path: '/agent', name: "agent", component: Agent },
     { path: '/agent_translate', name: "agent_translate", component: TranslateAgent },
     { path: '/agent_storyline', name: "agent_storyline", component: StorylineAgent },
+    { path: '/agent_six_hat', name: "agent_six_hat", component: SixHatAgent },
+    { path: '/agent_openai_o1', name: "agent_openai_o1", component: OpenaiO1Agent },
 ];
 
 const router = createRouter({

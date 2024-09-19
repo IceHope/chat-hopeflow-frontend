@@ -15,6 +15,12 @@ export const API_URL: API_URL = {
     get wsAgentTranslateHuman() {
         return `${this.wsUrl}/agent/translate_human`;
     },
+    get wsAgentSixHat() {
+        return `${this.wsUrl}/agent/six_hat`;
+    },
+    get wsAgentOpenaiO1() {
+        return `${this.wsUrl}/agent/openai_o1_reason`;
+    },
     get loginUrl() {
         return `${this.rootUrl}/user/login`;
     },
@@ -58,7 +64,9 @@ interface API_URL {
     wsChatUrl: string
     wsRagChatUrl: string
     wsAgentStoryLineUrl: string
+    wsAgentSixHat: string
     wsAgentTranslateHuman: string
+    wsAgentOpenaiO1: string
     rootUrl: string;
     loginUrl: string
     registerUrl: string

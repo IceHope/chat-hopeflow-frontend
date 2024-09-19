@@ -3,9 +3,12 @@
         <div v-for="(card, index) in cards" :key="index" class="card" @click="navigateToCardDetail(card)">
             <span class="title">{{ card.title }}</span>
             <span class="desc">{{ card.desc }}</span>
-            <div class="tool-wrap">
-                <img src="@/assets/agent-llm-icon.png" class="icon-llm">
-                <span class="tool-count-text">×{{ card.node_count }}</span>
+            <div class="bottom">
+                <div class="tool-wrap">
+                    <img src="@/assets/agent-llm-icon.png" class="icon-llm">
+                    <span class="tool-count-text">×{{ card.node_count }}</span>
+                </div>
+                <span class="frame">{{ card.frame }}</span>
             </div>
         </div>
     </div>
@@ -21,6 +24,7 @@ interface Card {
     item_id: string
     title: string
     desc: string
+    frame: string
     node_count: number
     flow_desc: string
 }
@@ -85,8 +89,13 @@ const navigateToCardDetail = (card: Card) => {
     color: var(--primary-text-ccolor);
 }
 
+.bottom {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+}
+
 .tool-wrap {
-    margin-top: 20px;
     display: flex;
 }
 
